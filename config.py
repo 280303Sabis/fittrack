@@ -8,8 +8,8 @@ class Config:
     # y ponla como variable de entorno, no aquí en texto plano.
     SECRET_KEY = os.environ.get("SECRET_KEY", "clave-de-desarrollo-cambiar-en-produccion")
 
-    # Base de datos SQLite local (archivo database.db en la raíz del proyecto)
+    # Base de datos MySQL local
     SQLALCHEMY_DATABASE_URI = os.environ.get(
-        "DATABASE_URL", f"sqlite:///{os.path.join(BASE_DIR, 'database.db')}"
+        "DATABASE_URL", "mysql+pymysql://root:root@localhost:3306/fittrack_db"
     )
     SQLALCHEMY_TRACK_MODIFICATIONS = False
