@@ -2,6 +2,7 @@ from flask import Flask, render_template
 
 from config import Config
 from extensions import db, login_manager
+from models import Usuario
 
 
 def create_app():
@@ -34,7 +35,7 @@ def create_app():
     def home():
         return render_template("home.html")
 
-    # Crear las tablas si no existen (para SQLite en desarrollo)
+    # Crear las tablas si no existen (en MySQL, base de datos fittrack_db)
     with app.app_context():
         db.create_all()
 
