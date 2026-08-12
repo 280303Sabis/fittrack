@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% block title %}Actividades — FitTrack{% endblock %}
+{% block content %}
+
+<span class="tag-label">Catálogo</span>
+<h2 class="mb-4">Actividades</h2>
+
+<div class="d-flex flex-wrap gap-2 mb-4">
+    <a href="{{ url_for('actividades.lista') }}"
+       class="btn btn-sm {{ 'btn-dark' if not categoria_actual else 'btn-outline-dark' }}">Todas</a>
+    <a href="{{ url_for('actividades.lista', categoria='pesas') }}"
+       class="btn btn-sm {{ 'btn-dark' if categoria_actual == 'pesas' else 'btn-outline-dark' }}">Pesas / Gimnasio</a>
+    <a href="{{ url_for('actividades.lista', categoria='crossfit') }}"
+       class="btn btn-sm {{ 'btn-dark' if categoria_actual == 'crossfit' else 'btn-outline-dark' }}">Crossfit</a>
+    <a href="{{ url_for('actividades.lista', categoria='cardio') }}"
+       class="btn btn-sm {{ 'btn-dark' if categoria_actual == 'cardio' else 'btn-outline-dark' }}">Cardio</a>
+</div>
+
+{% if grupos_selector %}
+    <p class="text-muted small mb-3">Elige un grupo muscular</p>
+    <div class="row g-3">
+        {% for g in grupos_selector %}
+        <div class="col-6 col-md-3 col-lg-2">
+            <a href="{{ url_for('actividades.lista', categoria='pesas', grupo_muscular=g.nombre) }}"
+               class="text-decoration-none">
+                <div class="card h-100 grupo-card text-center">
+                    <div class="card-body">
+                        <img src="{{ url_for('static', filename='img/grupos/' + g.icono + '.svg') }}"
+                             alt="{{ g.nombre }}" class="grupo-icono mb-2">
+                        <h6 class="mb-1">{{ g.nombre }}</h6>
+                        <span class="small" style="color: var(--color-muted);">{{ g.cantidad }} ejercicios</span>
+                    </div>
+                </div>
+            </a>
+        </div>
+        {% endfor %}
+    </div>
+
+{% else %}
+
+    {% if grupo_actual %}
+        <a href="{{ url_for('actividades.lista', categoria='pesas') }}" class="d-inline-block mb-3 small">
+            ← Todos los grupos musculares
+        </a>
+        <h5 class="mb-3">{{ grupo_actual }}</h5>
+    {% endif %}
+
+    <p class="text-muted small mb-3">{{ actividades|length }} actividades encontradas</p>
+    <div class="row g-3">
+        {% for a in actividades %}
+        <div class="col-md-4 col-lg-3">
+            <div class="card h-100">
+                <div class="card-body">
+                    <span class="tag-label">{{ a.categoria|capitalize }}</span>
+                    {% if a.grupo_muscular %}
+                        <span class="badge" style="background-color: var(--color-secondary);">{{ a.grupo_muscular }}</span>
+                    {% endif %}
+                    <h6 class="mt-2 mb-1">{{ a.nombre }}</h6>
+                    <p class="small mb-0" style="color: var(--color-muted);">{{ a.descripcion }}</p>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+{% endif %}
+
+{% endblock %}
