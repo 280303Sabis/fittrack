@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% block title %}Crear cuenta — FitTrack{% endblock %}
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-body p-4">
+                <h3 class="mb-4">Crear cuenta</h3>
+                <form method="POST" action="{{ url_for('auth.registro') }}">
+                    <div class="mb-3">
+                        <label class="form-label">Nombre</label>
+                        <input type="text" class="form-control" name="nombre" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Correo</label>
+                        <input type="email" class="form-control" name="email" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Contraseña</label>
+                        <input type="password" class="form-control" name="password" required>
+                    </div>
+
+                    <hr class="my-4">
+                    <p class="text-muted small mb-3">Estos datos nos ayudan a personalizar tus rutinas y consejos de nutrición.</p>
+
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">Peso (kg)</label>
+                            <input type="number" step="0.1" class="form-control" name="peso_kg">
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">Altura (cm)</label>
+                            <input type="number" step="0.1" class="form-control" name="altura_cm">
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">Edad</label>
+                            <input type="number" class="form-control" name="edad">
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label">Objetivo</label>
+                        <select class="form-select" name="objetivo" required>
+                            <option value="" disabled selected>Elige tu objetivo</option>
+                            <option value="bajar_peso">Bajar de peso</option>
+                            <option value="ganar_masa">Aumentar masa muscular</option>
+                            <option value="mantenimiento">Mantenimiento</option>
+                            <option value="resistencia">Resistencia / cardio</option>
+                        </select>
+                    </div>
+
+                    <button type="submit" class="btn btn-dark w-100">Registrarme</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

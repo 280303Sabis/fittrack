@@ -21,15 +21,14 @@ def create_app():
     # --- Blueprints ---
     # Cada módulo (auth, perfil, actividades, rutinas, etc.) se registra
     # aquí conforme se vaya construyendo en las siguientes fases.
-    # from routes.auth import auth_bp
-    # app.register_blueprint(auth_bp)
+    from routes.auth import auth_bp
+    app.register_blueprint(auth_bp)
 
-    # Flask-Login exige un user_loader en cuanto se inicializa. Este es
-    # temporal: en la Fase 1, cuando exista el modelo Usuario, se reemplaza
-    # por la carga real del usuario desde la base de datos.
+    # Flask-Login usa esto para saber quién es el usuario logueado en
+    # cada request, a partir del id que guarda en la sesión.
     @login_manager.user_loader
     def load_user(user_id):
-        return None
+        return Usuario.query.get(int(user_id))
 
     @app.route("/")
     def home():
