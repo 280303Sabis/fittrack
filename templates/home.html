@@ -1,9 +1,12 @@
 {% extends "base.html" %}
 {% block title %}FitTrack — Inicio{% endblock %}
 {% block content %}
-<div class="p-5 mb-4 bg-light rounded-3">
-    <h1 class="display-6 fw-bold">Bienvenido a FitTrack</h1>
-    <p class="col-md-8 fs-5">
+<div class="py-5 mb-5">
+    <span class="tag-label">Tu progreso, medido</span>
+    <h1 class="display-4 fw-bold mb-3" style="max-width: 700px;">
+        Entrena con propósito, <span style="color: var(--color-accent);">no a ciegas</span>
+    </h1>
+    <p class="fs-5" style="max-width: 600px; color: var(--color-muted);">
         Registra tus rutinas de gimnasio, crossfit y cardio, lleva tu progreso
         y recibe consejos de nutrición según tu objetivo.
     </p>
@@ -12,25 +15,28 @@
 <div class="row g-4">
     <div class="col-md-4">
         <div class="card h-100">
-            <div class="card-body">
+            <div class="card-body p-4">
+                <span class="tag-label">Módulo 01</span>
                 <h5 class="card-title">Rutinas</h5>
-                <p class="card-text">Arma tus propias rutinas eligiendo ejercicios por grupo muscular.</p>
+                <p class="card-text" style="color: var(--color-muted);">Arma tus propias rutinas eligiendo ejercicios por grupo muscular, crossfit o cardio.</p>
             </div>
         </div>
     </div>
     <div class="col-md-4">
         <div class="card h-100">
-            <div class="card-body">
+            <div class="card-body p-4">
+                <span class="tag-label">Módulo 02</span>
                 <h5 class="card-title">Estadísticas</h5>
-                <p class="card-text">Consulta tus minutos de actividad y tu racha de días seguidos.</p>
+                <p class="card-text" style="color: var(--color-muted);">Consulta tus minutos de actividad y tu racha de días seguidos.</p>
             </div>
         </div>
     </div>
     <div class="col-md-4">
         <div class="card h-100">
-            <div class="card-body">
+            <div class="card-body p-4">
+                <span class="tag-label">Módulo 03</span>
                 <h5 class="card-title">Nutrición</h5>
-                <p class="card-text">Consejos según tu objetivo: bajar de peso, ganar masa muscular o mantenimiento.</p>
+                <p class="card-text" style="color: var(--color-muted);">Consejos según tu objetivo: bajar de peso, ganar masa muscular o mantenimiento.</p>
             </div>
         </div>
     </div>

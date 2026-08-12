@@ -1,8 +1,95 @@
+@import url('https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@500;600&display=swap');
+
+:root {
+    --color-bg: #F5F6F4;
+    --color-ink: #14181C;
+    --color-accent: #FF4B2B;
+    --color-accent-soft: #FFE4DC;
+    --color-secondary: #2D5F4C;
+    --color-muted: #6B7280;
+    --color-surface: #FFFFFF;
+    --color-border: #E3E5E1;
+
+    --font-display: 'Oswald', sans-serif;
+    --font-body: 'Inter', sans-serif;
+    --font-mono: 'IBM Plex Mono', monospace;
+}
+
 body {
-    background-color: #f7f8fa;
+    background-color: var(--color-bg);
+    color: var(--color-ink);
+    font-family: var(--font-body);
+}
+
+h1, h2, h3, h4, .navbar-brand {
+    font-family: var(--font-display);
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+}
+
+/* Etiqueta tipo "tag" — el elemento distintivo de FitTrack */
+.tag-label {
+    display: inline-block;
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-accent);
+    border: 1px solid var(--color-accent);
+    padding: 2px 8px;
+    border-radius: 3px;
+    margin-bottom: 0.75rem;
+}
+
+/* Números de estadísticas / datos */
+.stat-number {
+    font-family: var(--font-mono);
+    font-weight: 600;
+    color: var(--color-ink);
 }
 
 .card {
-    border: none;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    background-color: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: 4px;
+    box-shadow: none;
+}
+
+.btn-dark {
+    background-color: var(--color-ink);
+    border-color: var(--color-ink);
+    font-family: var(--font-display);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.btn-dark:hover {
+    background-color: var(--color-accent);
+    border-color: var(--color-accent);
+}
+
+.navbar-dark .navbar-nav .nav-link {
+    font-family: var(--font-display);
+    text-transform: uppercase;
+    font-size: 0.85rem;
+    letter-spacing: 0.05em;
+}
+
+.navbar-dark .navbar-nav .nav-link:hover {
+    color: var(--color-accent);
+}
+
+.form-label {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--color-muted);
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: var(--color-accent);
+    box-shadow: 0 0 0 0.2rem var(--color-accent-soft);
 }
