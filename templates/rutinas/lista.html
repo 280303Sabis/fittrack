@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block title %}Mis rutinas — FitTrack{% endblock %}
+{% block content %}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <span class="tag-label">Tu plan</span>
+        <h2 class="mb-0">Mis rutinas</h2>
+    </div>
+    <a href="{{ url_for('rutinas.nueva') }}" class="btn btn-dark">+ Nueva rutina</a>
+</div>
+
+{% if rutinas %}
+<div class="row g-3">
+    {% for r in rutinas %}
+    <div class="col-md-4">
+        <a href="{{ url_for('rutinas.detalle', rutina_id=r.id) }}" class="text-decoration-none">
+            <div class="card h-100 grupo-card">
+                <div class="card-body">
+                    <h5 class="mb-1">{{ r.nombre }}</h5>
+                    <span class="small" style="color: var(--color-muted);">
+                        {{ r.actividades|length }} ejercicio{{ 's' if r.actividades|length != 1 else '' }}
+                    </span>
+                </div>
+            </div>
+        </a>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div class="text-center py-5">
+    <p style="color: var(--color-muted);">Todavía no tienes rutinas.</p>
+    <a href="{{ url_for('rutinas.nueva') }}" class="btn btn-dark">Crea tu primera rutina</a>
+</div>
+{% endif %}
+
+{% endblock %}

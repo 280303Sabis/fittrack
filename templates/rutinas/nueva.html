@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block title %}Nueva rutina — FitTrack{% endblock %}
+{% block content %}
+
+<div class="row justify-content-center">
+    <div class="col-md-5">
+        <div class="card">
+            <div class="card-body p-4">
+                <span class="tag-label">Crear</span>
+                <h3 class="mb-4">Nueva rutina</h3>
+                <form method="POST" action="{{ url_for('rutinas.nueva') }}">
+                    <div class="mb-4">
+                        <label class="form-label">Nombre de la rutina</label>
+                        <input type="text" class="form-control" name="nombre"
+                               placeholder="Ej. Piernas lunes, Full body, HIIT semana 1" required>
+                    </div>
+                    <button type="submit" class="btn btn-dark w-100">Crear y agregar ejercicios</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

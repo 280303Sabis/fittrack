@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block title %}{{ rutina.nombre }} — FitTrack{% endblock %}
+{% block content %}
+
+<a href="{{ url_for('rutinas.lista') }}" class="d-inline-block mb-3 small">← Mis rutinas</a>
+
+<span class="tag-label">Rutina</span>
+<h2 class="mb-4">{{ rutina.nombre }}</h2>
+
+{% if rutina.actividades %}
+<div class="row g-3">
+    {% for linea in rutina.actividades %}
+    <div class="col-md-4">
+        <div class="card h-100">
+            <div class="card-body">
+                <span class="tag-label">{{ linea.actividad.categoria|capitalize }}</span>
+                <h6 class="mt-2 mb-1">{{ linea.actividad.nombre }}</h6>
+                {% if linea.series %}
+                    <p class="small mb-0 stat-number">{{ linea.series }} series × {{ linea.repeticiones }} reps</p>
+                {% elif linea.duracion_minutos %}
+                    <p class="small mb-0 stat-number">{{ linea.duracion_minutos }} min</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div class="text-center py-5">
+    <p style="color: var(--color-muted);">Esta rutina todavía no tiene ejercicios.</p>
+</div>
+{% endif %}
+
+{% endblock %}
