@@ -8,6 +8,13 @@ from models import Actividad
 
 actividades_bp = Blueprint("actividades", __name__, url_prefix="/actividades")
 
+NOMBRES_CATEGORIA = {
+    "pesas": "Pesas / Gimnasio",
+    "crossfit": "Crossfit",
+    "cardio": "Cardio",
+}
+ORDEN_CATEGORIA = {"pesas": 0, "crossfit": 1, "cardio": 2}
+
 
 def slug_grupo(nombre):
     """Convierte 'Cuádriceps' en 'cuadriceps' para encontrar su archivo de ícono."""
@@ -21,18 +28,20 @@ def lista():
     categoria = request.args.get("categoria")
     grupo_muscular = request.args.get("grupo_muscular")
 
-    query = Actividad.query
-    if categoria:
-        query = query.filter_by(categoria=categoria)
-    if grupo_muscular:
-        query = query.filter_by(grupo_muscular=grupo_muscular)
-
-    actividades = query.order_by(Actividad.nombre).all()
-
-    # Si estamos en "pesas" y todavía no se eligió un grupo muscular,
-    # no mostramos ejercicios sueltos: mostramos el selector de íconos.
+    categorias_selector = None
     grupos_selector = None
-    if categoria == "pesas" and not grupo_muscular:
+    actividades = []
+
+    if not categoria:
+        # Nada elegido todavía: mostramos el selector de categorías con íconos
+        conteo = db.session.query(Actividad.categoria, func.count(Actividad.id)).group_by(Actividad.categoria).all()
+        categorias_selector = sorted(
+            [{"nombre": c, "etiqueta": NOMBRES_CATEGORIA.get(c, c), "cantidad": n} for c, n in conteo],
+            key=lambda x: ORDEN_CATEGORIA.get(x["nombre"], 99),
+        )
+
+    elif categoria == "pesas" and not grupo_muscular:
+        # Pesas elegido, pero sin grupo muscular todavía: selector de íconos por grupo
         conteo = (
             db.session.query(Actividad.grupo_muscular, func.count(Actividad.id))
             .filter(Actividad.categoria == "pesas")
@@ -43,11 +52,18 @@ def lista():
         grupos_selector = [
             {"nombre": g, "cantidad": c, "icono": slug_grupo(g)} for g, c in conteo
         ]
-        actividades = []
+
+    else:
+        # Ya se eligió categoría (y grupo, si aplica pesas): mostramos la lista
+        query = Actividad.query.filter_by(categoria=categoria)
+        if grupo_muscular:
+            query = query.filter_by(grupo_muscular=grupo_muscular)
+        actividades = query.order_by(Actividad.nombre).all()
 
     return render_template(
         "actividades/lista.html",
         actividades=actividades,
+        categorias_selector=categorias_selector,
         grupos_selector=grupos_selector,
         categoria_actual=categoria,
         grupo_actual=grupo_muscular,

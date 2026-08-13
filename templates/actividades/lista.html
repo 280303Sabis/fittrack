@@ -5,9 +5,9 @@
 <span class="tag-label">Catálogo</span>
 <h2 class="mb-4">Actividades</h2>
 
+{% if categoria_actual %}
 <div class="d-flex flex-wrap gap-2 mb-4">
-    <a href="{{ url_for('actividades.lista') }}"
-       class="btn btn-sm {{ 'btn-dark' if not categoria_actual else 'btn-outline-dark' }}">Todas</a>
+    <a href="{{ url_for('actividades.lista') }}" class="btn btn-sm btn-outline-dark">← Todas las categorías</a>
     <a href="{{ url_for('actividades.lista', categoria='pesas') }}"
        class="btn btn-sm {{ 'btn-dark' if categoria_actual == 'pesas' else 'btn-outline-dark' }}">Pesas / Gimnasio</a>
     <a href="{{ url_for('actividades.lista', categoria='crossfit') }}"
@@ -15,8 +15,28 @@
     <a href="{{ url_for('actividades.lista', categoria='cardio') }}"
        class="btn btn-sm {{ 'btn-dark' if categoria_actual == 'cardio' else 'btn-outline-dark' }}">Cardio</a>
 </div>
+{% endif %}
 
-{% if grupos_selector %}
+{% if categorias_selector %}
+    <p class="text-muted small mb-3">Elige una categoría</p>
+    <div class="row g-3 mb-4">
+        {% for c in categorias_selector %}
+        <div class="col-md-4">
+            <a href="{{ url_for('actividades.lista', categoria=c.nombre) }}" class="text-decoration-none">
+                <div class="card h-100 grupo-card text-center">
+                    <div class="card-body py-4">
+                        <img src="{{ url_for('static', filename='img/categorias/' + c.nombre + '.svg') }}"
+                             alt="{{ c.etiqueta }}" class="categoria-icono mb-3">
+                        <h5 class="mb-1">{{ c.etiqueta }}</h5>
+                        <span class="small" style="color: var(--color-muted);">{{ c.cantidad }} actividades</span>
+                    </div>
+                </div>
+            </a>
+        </div>
+        {% endfor %}
+    </div>
+
+{% elif grupos_selector %}
     <p class="text-muted small mb-3">Elige un grupo muscular</p>
     <div class="row g-3">
         {% for g in grupos_selector %}
