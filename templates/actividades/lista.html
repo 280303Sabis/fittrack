@@ -5,14 +5,21 @@
 <span class="tag-label">Catálogo</span>
 <h2 class="mb-4">Actividades</h2>
 
+{% if rutina_id %}
+<div class="alert alert-info d-flex justify-content-between align-items-center">
+    <span>Elige un ejercicio para agregarlo a tu rutina.</span>
+    <a href="{{ url_for('rutinas.detalle', rutina_id=rutina_id) }}" class="small">← Volver a la rutina</a>
+</div>
+{% endif %}
+
 {% if categoria_actual %}
 <div class="d-flex flex-wrap gap-2 mb-4">
-    <a href="{{ url_for('actividades.lista') }}" class="btn btn-sm btn-outline-dark">← Todas las categorías</a>
-    <a href="{{ url_for('actividades.lista', categoria='pesas') }}"
+    <a href="{{ url_for('actividades.lista', rutina_id=rutina_id) }}" class="btn btn-sm btn-outline-dark">← Todas las categorías</a>
+    <a href="{{ url_for('actividades.lista', categoria='pesas', rutina_id=rutina_id) }}"
        class="btn btn-sm {{ 'btn-dark' if categoria_actual == 'pesas' else 'btn-outline-dark' }}">Pesas / Gimnasio</a>
-    <a href="{{ url_for('actividades.lista', categoria='crossfit') }}"
+    <a href="{{ url_for('actividades.lista', categoria='crossfit', rutina_id=rutina_id) }}"
        class="btn btn-sm {{ 'btn-dark' if categoria_actual == 'crossfit' else 'btn-outline-dark' }}">Crossfit</a>
-    <a href="{{ url_for('actividades.lista', categoria='cardio') }}"
+    <a href="{{ url_for('actividades.lista', categoria='cardio', rutina_id=rutina_id) }}"
        class="btn btn-sm {{ 'btn-dark' if categoria_actual == 'cardio' else 'btn-outline-dark' }}">Cardio</a>
 </div>
 {% endif %}
@@ -22,7 +29,7 @@
     <div class="row g-3 mb-4">
         {% for c in categorias_selector %}
         <div class="col-md-4">
-            <a href="{{ url_for('actividades.lista', categoria=c.nombre) }}" class="text-decoration-none">
+            <a href="{{ url_for('actividades.lista', categoria=c.nombre, rutina_id=rutina_id) }}" class="text-decoration-none">
                 <div class="card h-100 grupo-card text-center">
                     <div class="card-body py-4">
                         <img src="{{ url_for('static', filename='img/categorias/' + c.nombre + '.svg') }}"
@@ -41,7 +48,7 @@
     <div class="row g-3">
         {% for g in grupos_selector %}
         <div class="col-6 col-md-3 col-lg-2">
-            <a href="{{ url_for('actividades.lista', categoria='pesas', grupo_muscular=g.nombre) }}"
+            <a href="{{ url_for('actividades.lista', categoria='pesas', grupo_muscular=g.nombre, rutina_id=rutina_id) }}"
                class="text-decoration-none">
                 <div class="card h-100 grupo-card text-center">
                     <div class="card-body">
@@ -59,7 +66,7 @@
 {% else %}
 
     {% if grupo_actual %}
-        <a href="{{ url_for('actividades.lista', categoria='pesas') }}" class="d-inline-block mb-3 small">
+        <a href="{{ url_for('actividades.lista', categoria='pesas', rutina_id=rutina_id) }}" class="d-inline-block mb-3 small">
             ← Todos los grupos musculares
         </a>
         <h5 class="mb-3">{{ grupo_actual }}</h5>
@@ -77,6 +84,10 @@
                     {% endif %}
                     <h6 class="mt-2 mb-1">{{ a.nombre }}</h6>
                     <p class="small mb-0" style="color: var(--color-muted);">{{ a.descripcion }}</p>
+                    {% if rutina_id %}
+                    <a href="{{ url_for('rutinas.agregar_actividad', rutina_id=rutina_id, actividad_id=a.id) }}"
+                       class="btn btn-sm btn-dark w-100 mt-3">+ Agregar</a>
+                    {% endif %}
                 </div>
             </div>
         </div>

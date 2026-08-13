@@ -27,13 +27,15 @@ def slug_grupo(nombre):
 def lista():
     categoria = request.args.get("categoria")
     grupo_muscular = request.args.get("grupo_muscular")
+    # Si viene un rutina_id, significa que estamos eligiendo ejercicios
+    # PARA esa rutina específica (en vez de solo explorar el catálogo).
+    rutina_id = request.args.get("rutina_id", type=int)
 
     categorias_selector = None
     grupos_selector = None
     actividades = []
 
     if not categoria:
-        # Nada elegido todavía: mostramos el selector de categorías con íconos
         conteo = db.session.query(Actividad.categoria, func.count(Actividad.id)).group_by(Actividad.categoria).all()
         categorias_selector = sorted(
             [{"nombre": c, "etiqueta": NOMBRES_CATEGORIA.get(c, c), "cantidad": n} for c, n in conteo],
@@ -41,7 +43,6 @@ def lista():
         )
 
     elif categoria == "pesas" and not grupo_muscular:
-        # Pesas elegido, pero sin grupo muscular todavía: selector de íconos por grupo
         conteo = (
             db.session.query(Actividad.grupo_muscular, func.count(Actividad.id))
             .filter(Actividad.categoria == "pesas")
@@ -54,7 +55,6 @@ def lista():
         ]
 
     else:
-        # Ya se eligió categoría (y grupo, si aplica pesas): mostramos la lista
         query = Actividad.query.filter_by(categoria=categoria)
         if grupo_muscular:
             query = query.filter_by(grupo_muscular=grupo_muscular)
@@ -67,4 +67,5 @@ def lista():
         grupos_selector=grupos_selector,
         categoria_actual=categoria,
         grupo_actual=grupo_muscular,
+        rutina_id=rutina_id,
     )

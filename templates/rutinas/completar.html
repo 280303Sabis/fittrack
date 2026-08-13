@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block title %}Completar {{ rutina.nombre }} — FitTrack{% endblock %}
+{% block content %}
+
+<div class="row justify-content-center">
+    <div class="col-md-5">
+        <div class="card">
+            <div class="card-body p-4">
+                <span class="tag-label">¡Buen trabajo!</span>
+                <h3 class="mb-1">Completar rutina</h3>
+                <p class="small mb-4" style="color: var(--color-muted);">{{ rutina.nombre }}</p>
+
+                <form method="POST" action="{{ url_for('rutinas.completar', rutina_id=rutina.id) }}">
+                    <div class="mb-4">
+                        <label class="form-label">¿Cuánto duró tu sesión? (minutos)</label>
+                        <input type="number" class="form-control" name="duracion_minutos" min="1" required autofocus>
+                    </div>
+                    <button type="submit" class="btn btn-dark w-100">Registrar como completada</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

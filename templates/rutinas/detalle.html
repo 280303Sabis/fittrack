@@ -4,8 +4,18 @@
 
 <a href="{{ url_for('rutinas.lista') }}" class="d-inline-block mb-3 small">← Mis rutinas</a>
 
-<span class="tag-label">Rutina</span>
-<h2 class="mb-4">{{ rutina.nombre }}</h2>
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <span class="tag-label">Rutina</span>
+        <h2 class="mb-0">{{ rutina.nombre }}</h2>
+    </div>
+    <div>
+        {% if rutina.actividades %}
+        <a href="{{ url_for('rutinas.completar', rutina_id=rutina.id) }}" class="btn btn-outline-dark me-2">✓ Marcar como completada</a>
+        {% endif %}
+        <a href="{{ url_for('actividades.lista', rutina_id=rutina.id) }}" class="btn btn-dark">+ Agregar ejercicio</a>
+    </div>
+</div>
 
 {% if rutina.actividades %}
 <div class="row g-3">

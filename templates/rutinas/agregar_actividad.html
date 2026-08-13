@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block title %}Agregar {{ actividad.nombre }} — FitTrack{% endblock %}
+{% block content %}
+
+<div class="row justify-content-center">
+    <div class="col-md-5">
+        <div class="card">
+            <div class="card-body p-4">
+                <span class="tag-label">{{ rutina.nombre }}</span>
+                <h3 class="mb-1">{{ actividad.nombre }}</h3>
+                {% if actividad.grupo_muscular %}
+                    <p class="small mb-4" style="color: var(--color-muted);">{{ actividad.grupo_muscular }}</p>
+                {% else %}
+                    <p class="small mb-4" style="color: var(--color-muted);">{{ actividad.categoria|capitalize }}</p>
+                {% endif %}
+
+                <form method="POST" action="{{ url_for('rutinas.agregar_actividad', rutina_id=rutina.id, actividad_id=actividad.id) }}">
+                    {% if actividad.categoria == 'cardio' %}
+                        <div class="mb-4">
+                            <label class="form-label">Duración (minutos)</label>
+                            <input type="number" class="form-control" name="duracion_minutos" min="1" required>
+                        </div>
+                    {% else %}
+                        <div class="row">
+                            <div class="col-6 mb-4">
+                                <label class="form-label">Series</label>
+                                <input type="number" class="form-control" name="series" min="1" required>
+                            </div>
+                            <div class="col-6 mb-4">
+                                <label class="form-label">Repeticiones</label>
+                                <input type="number" class="form-control" name="repeticiones" min="1" required>
+                            </div>
+                        </div>
+                    {% endif %}
+
+                    <button type="submit" class="btn btn-dark w-100">Agregar a la rutina</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
