@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block title %}Editar {{ linea.actividad.nombre }} — FitTrack{% endblock %}
+{% block content %}
+
+<div class="row justify-content-center">
+    <div class="col-md-5">
+        <div class="card">
+            <div class="card-body p-4">
+                <span class="tag-label">{{ rutina.nombre }}</span>
+                <h3 class="mb-4">{{ linea.actividad.nombre }}</h3>
+
+                <form method="POST" action="{{ url_for('rutinas.editar_actividad', rutina_id=rutina.id, linea_id=linea.id) }}">
+                    {% if linea.actividad.categoria == 'cardio' %}
+                        <div class="mb-4">
+                            <label class="form-label">Duración (minutos)</label>
+                            <input type="number" class="form-control" name="duracion_minutos"
+                                   value="{{ linea.duracion_minutos }}" min="1" required>
+                        </div>
+                    {% else %}
+                        <div class="row">
+                            <div class="col-6 mb-4">
+                                <label class="form-label">Series</label>
+                                <input type="number" class="form-control" name="series"
+                                       value="{{ linea.series }}" min="1" required>
+                            </div>
+                            <div class="col-6 mb-4">
+                                <label class="form-label">Repeticiones</label>
+                                <input type="number" class="form-control" name="repeticiones"
+                                       value="{{ linea.repeticiones }}" min="1" required>
+                            </div>
+                        </div>
+                    {% endif %}
+
+                    <button type="submit" class="btn btn-dark w-100">Guardar cambios</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

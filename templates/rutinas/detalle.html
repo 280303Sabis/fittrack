@@ -26,10 +26,18 @@
                 <span class="tag-label">{{ linea.actividad.categoria|capitalize }}</span>
                 <h6 class="mt-2 mb-1">{{ linea.actividad.nombre }}</h6>
                 {% if linea.series %}
-                    <p class="small mb-0 stat-number">{{ linea.series }} series × {{ linea.repeticiones }} reps</p>
+                    <p class="small mb-2 stat-number">{{ linea.series }} series × {{ linea.repeticiones }} reps</p>
                 {% elif linea.duracion_minutos %}
-                    <p class="small mb-0 stat-number">{{ linea.duracion_minutos }} min</p>
+                    <p class="small mb-2 stat-number">{{ linea.duracion_minutos }} min</p>
                 {% endif %}
+                <div class="d-flex gap-2">
+                    <a href="{{ url_for('rutinas.editar_actividad', rutina_id=rutina.id, linea_id=linea.id) }}"
+                       class="btn btn-sm btn-outline-dark flex-fill">Editar</a>
+                    <form method="POST" action="{{ url_for('rutinas.quitar_actividad', rutina_id=rutina.id, linea_id=linea.id) }}" class="flex-fill">
+                        <button type="submit" class="btn btn-sm btn-outline-dark w-100"
+                                onclick="return confirm('¿Quitar {{ linea.actividad.nombre }} de la rutina?')">Quitar</button>
+                    </form>
+                </div>
             </div>
         </div>
     </div>

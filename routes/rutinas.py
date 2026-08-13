@@ -96,3 +96,39 @@ def completar(rutina_id):
         return redirect(url_for("rutinas.detalle", rutina_id=rutina.id))
 
     return render_template("rutinas/completar.html", rutina=rutina)
+
+
+@rutinas_bp.route("/<int:rutina_id>/editar/<int:linea_id>", methods=["GET", "POST"])
+@login_required
+def editar_actividad(rutina_id, linea_id):
+    rutina = Rutina.query.filter_by(id=rutina_id, usuario_id=current_user.id).first_or_404()
+    linea = RutinaActividad.query.filter_by(id=linea_id, rutina_id=rutina.id).first_or_404()
+
+    if request.method == "POST":
+        series = request.form.get("series")
+        repeticiones = request.form.get("repeticiones")
+        duracion_minutos = request.form.get("duracion_minutos")
+
+        linea.series = int(series) if series else None
+        linea.repeticiones = int(repeticiones) if repeticiones else None
+        linea.duracion_minutos = int(duracion_minutos) if duracion_minutos else None
+        db.session.commit()
+
+        flash(f"'{linea.actividad.nombre}' actualizado.")
+        return redirect(url_for("rutinas.detalle", rutina_id=rutina.id))
+
+    return render_template("rutinas/editar_actividad.html", rutina=rutina, linea=linea)
+
+
+@rutinas_bp.route("/<int:rutina_id>/quitar/<int:linea_id>", methods=["POST"])
+@login_required
+def quitar_actividad(rutina_id, linea_id):
+    rutina = Rutina.query.filter_by(id=rutina_id, usuario_id=current_user.id).first_or_404()
+    linea = RutinaActividad.query.filter_by(id=linea_id, rutina_id=rutina.id).first_or_404()
+
+    nombre = linea.actividad.nombre
+    db.session.delete(linea)
+    db.session.commit()
+
+    flash(f"'{nombre}' se quitó de la rutina.")
+    return redirect(url_for("rutinas.detalle", rutina_id=rutina.id))
