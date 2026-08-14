@@ -1,9 +1,10 @@
 from collections import Counter
 from datetime import date, timedelta
 
-from flask import Blueprint, render_template
+from flask import Blueprint, render_template, request, redirect, url_for, flash
 from flask_login import login_required, current_user
 
+from extensions import db
 from models import RegistroActividad
 
 estadisticas_bp = Blueprint("estadisticas", __name__, url_prefix="/estadisticas")
@@ -83,6 +84,7 @@ def resumen():
         progreso_meta=progreso_meta,
     )
 
+
 @estadisticas_bp.route("/historial")
 @login_required
 def historial():
@@ -92,3 +94,38 @@ def historial():
         .all()
     )
     return render_template("estadisticas/historial.html", registros=registros)
+
+
+@estadisticas_bp.route("/editar/<int:registro_id>", methods=["GET", "POST"])
+@login_required
+def editar_registro(registro_id):
+    registro = RegistroActividad.query.filter_by(id=registro_id, usuario_id=current_user.id).first_or_404()
+
+    if request.method == "POST":
+        fecha = request.form.get("fecha")
+        duracion_minutos = request.form.get("duracion_minutos")
+
+        if not fecha or not duracion_minutos:
+            flash("Completa la fecha y la duración.")
+            return redirect(url_for("estadisticas.editar_registro", registro_id=registro.id))
+
+        registro.fecha = fecha
+        registro.duracion_minutos = int(duracion_minutos)
+        db.session.commit()
+
+        flash("Registro actualizado.")
+        return redirect(url_for("estadisticas.historial"))
+
+    return render_template("estadisticas/editar_registro.html", registro=registro)
+
+
+@estadisticas_bp.route("/eliminar/<int:registro_id>", methods=["POST"])
+@login_required
+def eliminar_registro(registro_id):
+    registro = RegistroActividad.query.filter_by(id=registro_id, usuario_id=current_user.id).first_or_404()
+
+    db.session.delete(registro)
+    db.session.commit()
+
+    flash("Registro eliminado.")
+    return redirect(url_for("estadisticas.historial"))

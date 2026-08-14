@@ -15,7 +15,8 @@
                 <tr>
                     <th class="ps-4">Rutina</th>
                     <th>Fecha</th>
-                    <th class="pe-4 text-end">Duración</th>
+                    <th class="text-end">Duración</th>
+                    <th class="pe-4"></th>
                 </tr>
             </thead>
             <tbody>
@@ -23,7 +24,16 @@
                 <tr>
                     <td class="ps-4">{{ r.rutina.nombre }}</td>
                     <td>{{ r.fecha.strftime('%d/%m/%Y') }}</td>
-                    <td class="pe-4 text-end stat-number">{{ r.duracion_minutos }} min</td>
+                    <td class="text-end stat-number">{{ r.duracion_minutos }} min</td>
+                    <td class="pe-4 text-end" style="white-space: nowrap;">
+                        <a href="{{ url_for('estadisticas.editar_registro', registro_id=r.id) }}"
+                           class="btn btn-sm btn-outline-dark">Editar</a>
+                        <form method="POST" action="{{ url_for('estadisticas.eliminar_registro', registro_id=r.id) }}"
+                              class="d-inline">
+                            <button type="submit" class="btn btn-sm btn-outline-dark"
+                                    onclick="return confirm('¿Eliminar este registro?')">Eliminar</button>
+                        </form>
+                    </td>
                 </tr>
                 {% endfor %}
             </tbody>

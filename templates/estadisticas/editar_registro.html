@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block title %}Editar registro — FitTrack{% endblock %}
+{% block content %}
+
+<div class="row justify-content-center">
+    <div class="col-md-5">
+        <div class="card">
+            <div class="card-body p-4">
+                <span class="tag-label">{{ registro.rutina.nombre }}</span>
+                <h3 class="mb-4">Editar registro</h3>
+
+                <form method="POST" action="{{ url_for('estadisticas.editar_registro', registro_id=registro.id) }}">
+                    <div class="mb-3">
+                        <label class="form-label">Fecha</label>
+                        <input type="date" class="form-control" name="fecha" value="{{ registro.fecha }}" required>
+                    </div>
+                    <div class="mb-4">
+                        <label class="form-label">Duración (minutos)</label>
+                        <input type="number" class="form-control" name="duracion_minutos"
+                               value="{{ registro.duracion_minutos }}" min="1" required>
+                    </div>
+                    <button type="submit" class="btn btn-dark w-100">Guardar cambios</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

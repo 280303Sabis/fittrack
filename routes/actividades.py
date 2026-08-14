@@ -69,3 +69,4 @@ def lista():
         grupo_actual=grupo_muscular,
         rutina_id=rutina_id,
     )
+
