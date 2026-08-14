@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block title %}Nutrición — FitTrack{% endblock %}
+{% block content %}
+
+<span class="tag-label">{{ objetivo_actual }}</span>
+<h2 class="mb-4">Consejos de nutrición</h2>
+
+{% if consejos %}
+<div class="row g-3">
+    {% for c in consejos %}
+    <div class="col-md-6">
+        <div class="card h-100">
+            <div class="card-body">
+                <h6 class="mb-2">{{ c.titulo }}</h6>
+                <p class="small mb-0" style="color: var(--color-muted);">{{ c.descripcion }}</p>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div class="text-center py-5">
+    <p style="color: var(--color-muted);">Todavía no tienes un objetivo definido en tu perfil.</p>
+</div>
+{% endif %}
+
+{% endblock %}
