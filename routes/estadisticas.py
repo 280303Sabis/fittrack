@@ -82,3 +82,13 @@ def resumen():
         meta_semanal=meta_semanal,
         progreso_meta=progreso_meta,
     )
+
+@estadisticas_bp.route("/historial")
+@login_required
+def historial():
+    registros = (
+        RegistroActividad.query.filter_by(usuario_id=current_user.id)
+        .order_by(RegistroActividad.fecha.desc())
+        .all()
+    )
+    return render_template("estadisticas/historial.html", registros=registros)

@@ -83,7 +83,10 @@
 </div>
 </div>
 
-<h5 class="mb-3">Últimas sesiones</h5>
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h5 class="mb-0">Últimas sesiones</h5>
+    <a href="{{ url_for('estadisticas.historial') }}" class="small">Ver historial completo →</a>
+</div>
 
 {% if ultimos_registros %}
 <div class="card">

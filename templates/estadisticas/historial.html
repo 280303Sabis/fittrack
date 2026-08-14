@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}Historial — FitTrack{% endblock %}
+{% block content %}
+
+<a href="{{ url_for('estadisticas.resumen') }}" class="d-inline-block mb-3 small">← Estadísticas</a>
+
+<span class="tag-label">Historial completo</span>
+<h2 class="mb-4">Todas tus sesiones</h2>
+
+{% if registros %}
+<div class="card">
+    <div class="card-body p-0">
+        <table class="table mb-0">
+            <thead>
+                <tr>
+                    <th class="ps-4">Rutina</th>
+                    <th>Fecha</th>
+                    <th class="pe-4 text-end">Duración</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for r in registros %}
+                <tr>
+                    <td class="ps-4">{{ r.rutina.nombre }}</td>
+                    <td>{{ r.fecha.strftime('%d/%m/%Y') }}</td>
+                    <td class="pe-4 text-end stat-number">{{ r.duracion_minutos }} min</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+<p class="small mt-3" style="color: var(--color-muted);">{{ registros|length }} sesiones en total</p>
+{% else %}
+<div class="text-center py-5">
+    <p style="color: var(--color-muted);">Todavía no has completado ninguna rutina.</p>
+</div>
+{% endif %}
+
+{% endblock %}
