@@ -26,6 +26,10 @@ class Usuario(db.Model, UserMixin):
     # Meta personal de minutos de actividad por semana (para la barra de progreso)
     meta_minutos_semana = db.Column(db.Integer, nullable=True, default=150)
 
+    # Para recuperación de contraseña: token temporal + cuándo se generó
+    token_recuperacion = db.Column(db.String(100), nullable=True)
+    token_expira = db.Column(db.DateTime, nullable=True)
+
     fecha_registro = db.Column(db.DateTime, default=datetime.utcnow)
 
     def set_password(self, password):

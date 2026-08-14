@@ -1,7 +1,11 @@
+import secrets
+from datetime import datetime, timedelta
+
 from flask import Blueprint, render_template, redirect, url_for, request, flash
 from flask_login import login_user, logout_user, login_required
+from flask_mail import Message
 
-from extensions import db
+from extensions import db, mail
 from models import Usuario
 
 auth_bp = Blueprint("auth", __name__, url_prefix="/auth")
@@ -66,9 +70,62 @@ def login():
 
     return render_template("auth/login.html")
 
+
 @auth_bp.route("/logout")
 @login_required
 def logout():
     logout_user()
     flash("Cerraste sesión correctamente.")
     return redirect(url_for("home"))
+
+
+@auth_bp.route("/recuperar", methods=["GET", "POST"])
+def recuperar():
+    if request.method == "POST":
+        email = request.form.get("email")
+        usuario = Usuario.query.filter_by(email=email).first()
+
+        if usuario:
+            token = secrets.token_urlsafe(32)
+            usuario.token_recuperacion = token
+            usuario.token_expira = datetime.utcnow() + timedelta(hours=1)
+            db.session.commit()
+
+            link = url_for("auth.restablecer", token=token, _external=True)
+            mensaje = Message(
+                subject="Recuperar contraseña — FitTrack",
+                recipients=[usuario.email],
+                body=f"Hola {usuario.nombre},\n\nPara restablecer tu contraseña, entra a este link (válido por 1 hora):\n{link}\n\nSi no pediste esto, ignora este correo.",
+            )
+            mail.send(mensaje)
+
+        # Mismo mensaje exista o no el correo, por seguridad
+        flash("Si ese correo está registrado, te enviamos un link para recuperar tu contraseña.")
+        return redirect(url_for("auth.login"))
+
+    return render_template("auth/recuperar.html")
+
+
+@auth_bp.route("/restablecer/<token>", methods=["GET", "POST"])
+def restablecer(token):
+    usuario = Usuario.query.filter_by(token_recuperacion=token).first()
+
+    if not usuario or not usuario.token_expira or usuario.token_expira < datetime.utcnow():
+        flash("El link de recuperación no es válido o ya expiró.")
+        return redirect(url_for("auth.recuperar"))
+
+    if request.method == "POST":
+        password = request.form.get("password")
+        if not password:
+            flash("Escribe una nueva contraseña.")
+            return redirect(url_for("auth.restablecer", token=token))
+
+        usuario.set_password(password)
+        usuario.token_recuperacion = None
+        usuario.token_expira = None
+        db.session.commit()
+
+        flash("Tu contraseña fue actualizada. Ya puedes iniciar sesión.")
+        return redirect(url_for("auth.login"))
+
+    return render_template("auth/restablecer.html", token=token)

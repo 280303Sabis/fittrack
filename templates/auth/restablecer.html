@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block title %}Nueva contraseña — FitTrack{% endblock %}
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-5">
+        <div class="card">
+            <div class="card-body p-4">
+                <span class="tag-label">Último paso</span>
+                <h3 class="mb-4">Elige tu nueva contraseña</h3>
+                <form method="POST" action="{{ url_for('auth.restablecer', token=token) }}">
+                    <div class="mb-4">
+                        <label class="form-label">Nueva contraseña</label>
+                        <input type="password" class="form-control" name="password" required autofocus>
+                    </div>
+                    <button type="submit" class="btn btn-dark w-100">Guardar nueva contraseña</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

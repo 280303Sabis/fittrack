@@ -1,7 +1,7 @@
 from flask import Flask, render_template
 
 from config import Config
-from extensions import db, login_manager
+from extensions import db, login_manager, mail
 from models import Usuario
 
 
@@ -17,6 +17,7 @@ def create_app():
     # Conectar extensiones a esta instancia de la app
     db.init_app(app)
     login_manager.init_app(app)
+    mail.init_app(app)
 
     # --- Blueprints ---
     # Cada módulo (auth, perfil, actividades, rutinas, etc.) se registra
