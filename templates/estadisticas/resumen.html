@@ -1,0 +1,140 @@
+{% extends "base.html" %}
+{% block title %}Estadísticas — FitTrack{% endblock %}
+{% block content %}
+
+<span class="tag-label">Tu progreso</span>
+<h2 class="mb-4">Estadísticas</h2>
+
+<div class="card mb-4">
+    <div class="card-body">
+        <div class="d-flex justify-content-between mb-2">
+            <span class="small fw-bold">Meta semanal</span>
+            <span class="small stat-number">{{ minutos_semana }} / {{ meta_semanal }} min</span>
+        </div>
+        <div class="progress" style="height: 10px;">
+            <div class="progress-bar" style="width: {{ progreso_meta }}%; background-color: var(--color-secondary);"></div>
+        </div>
+        {% if progreso_meta >= 100 %}
+            <p class="small mt-2 mb-0" style="color: var(--color-secondary);">🎉 ¡Meta semanal cumplida!</p>
+        {% endif %}
+    </div>
+</div>
+
+<button class="btn btn-sm btn-outline-dark mb-3" type="button" data-bs-toggle="collapse" data-bs-target="#graficaContainer">
+    Ver gráfica semanal
+</button>
+
+<div class="collapse mb-3" id="graficaContainer">
+    <div class="card">
+        <div class="card-body" style="height: 220px;">
+            <canvas id="graficaSemana"></canvas>
+        </div>
+    </div>
+</div>
+
+<div class="row g-3 mb-4">
+    <div class="col-md-4">
+        <div class="card h-100">
+            <div class="card-body text-center py-4">
+                <p class="stat-number mb-1" style="font-size: 2.5rem;">{{ minutos_semana }}</p>
+                <p class="small mb-0" style="color: var(--color-muted);">minutos esta semana</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card h-100">
+            <div class="card-body text-center py-4">
+                <p class="stat-number mb-1" style="font-size: 2.5rem; color: var(--color-accent);">{{ racha_dias }}</p>
+                <p class="small mb-0" style="color: var(--color-muted);">
+                    día{{ 's' if racha_dias != 1 else '' }} seguido{{ 's' if racha_dias != 1 else '' }}
+                </p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card h-100">
+            <div class="card-body text-center py-4">
+                <p class="stat-number mb-1" style="font-size: 2.5rem;">{{ total_sesiones }}</p>
+                <p class="small mb-0" style="color: var(--color-muted);">sesiones totales</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<button class="btn btn-sm btn-outline-dark mb-3" type="button" data-bs-toggle="collapse" data-bs-target="#categoriaContainer">
+    Ver desglose por categoría
+</button>
+
+<div class="collapse mb-4" id="categoriaContainer">
+<div class="card">
+    <div class="card-body">
+        {% for c in desglose_categorias %}
+        <div class="mb-3">
+            <div class="d-flex justify-content-between mb-1">
+                <span class="small">{{ c.nombre }}</span>
+                <span class="small stat-number">{{ c.minutos }} min ({{ c.porcentaje }}%)</span>
+            </div>
+            <div class="progress" style="height: 8px;">
+                <div class="progress-bar" style="width: {{ c.porcentaje }}%; background-color: var(--color-accent);"></div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+</div>
+
+<h5 class="mb-3">Últimas sesiones</h5>
+
+{% if ultimos_registros %}
+<div class="card">
+    <div class="card-body p-0">
+        <table class="table mb-0">
+            <thead>
+                <tr>
+                    <th class="ps-4">Rutina</th>
+                    <th>Fecha</th>
+                    <th class="pe-4 text-end">Duración</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for r in ultimos_registros %}
+                <tr>
+                    <td class="ps-4">{{ r.rutina.nombre }}</td>
+                    <td>{{ r.fecha.strftime('%d/%m/%Y') }}</td>
+                    <td class="pe-4 text-end stat-number">{{ r.duracion_minutos }} min</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% else %}
+<div class="text-center py-5">
+    <p style="color: var(--color-muted);">Todavía no has completado ninguna rutina.</p>
+    <a href="{{ url_for('rutinas.lista') }}" class="btn btn-dark">Ver mis rutinas</a>
+</div>
+{% endif %}
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script>
+    const ctx = document.getElementById('graficaSemana').getContext('2d');
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: {{ labels_grafica|tojson }},
+            datasets: [{
+                label: 'Minutos',
+                data: {{ datos_grafica|tojson }},
+                backgroundColor: '#FF4B2B',
+                borderRadius: 4,
+            }]
+        },
+        options: {
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: { y: { beginAtZero: true, ticks: { precision: 0 } } }
+        }
+    });
+</script>
+
+{% endblock %}

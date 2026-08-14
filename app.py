@@ -30,6 +30,9 @@ def create_app():
     from routes.rutinas import rutinas_bp
     app.register_blueprint(rutinas_bp)
 
+    from routes.estadisticas import estadisticas_bp
+    app.register_blueprint(estadisticas_bp)
+
     # Flask-Login usa esto para saber quién es el usuario logueado en
     # cada request, a partir del id que guarda en la sesión.
     @login_manager.user_loader

@@ -23,6 +23,9 @@ class Usuario(db.Model, UserMixin):
     # Objetivo: define qué rutinas y consejos de nutrición se le muestran
     objetivo = db.Column(db.String(30), nullable=True)  # bajar_peso, ganar_masa, mantenimiento, resistencia
 
+    # Meta personal de minutos de actividad por semana (para la barra de progreso)
+    meta_minutos_semana = db.Column(db.Integer, nullable=True, default=150)
+
     fecha_registro = db.Column(db.DateTime, default=datetime.utcnow)
 
     def set_password(self, password):
