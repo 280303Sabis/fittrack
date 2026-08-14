@@ -17,10 +17,17 @@
             <div class="collapse navbar-collapse" id="navMenu">
                 <ul class="navbar-nav ms-auto">
                     <li class="nav-item"><a class="nav-link" href="{{ url_for('rutinas.lista') }}">Rutinas</a></li>
+                    {% if not current_user.is_authenticated %}
                     <li class="nav-item"><a class="nav-link" href="{{ url_for('auth.registro') }}">Registro</a></li>
+                    {% endif %}
                     <li class="nav-item"><a class="nav-link" href="{{ url_for('estadisticas.resumen') }}">Estadísticas</a></li>
                     <li class="nav-item"><a class="nav-link" href="{{ url_for('nutricion.consejos') }}">Nutrición</a></li>
-                    <li class="nav-item"><a class="nav-link" href="{{ url_for('auth.login') }}">Iniciar sesión</a></li>
+                    {% if current_user.is_authenticated %}
+                        <li class="nav-item"><span class="nav-link">Hola, {{ current_user.nombre }}</span></li>
+                        <li class="nav-item"><a class="nav-link" href="{{ url_for('auth.logout') }}">Cerrar sesión</a></li>
+                    {% else %}
+                        <li class="nav-item"><a class="nav-link" href="{{ url_for('auth.login') }}">Iniciar sesión</a></li>
+                    {% endif %}
                 </ul>
             </div>
         </div>

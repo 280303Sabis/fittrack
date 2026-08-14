@@ -1,5 +1,5 @@
 from flask import Blueprint, render_template, redirect, url_for, request, flash
-from flask_login import login_user
+from flask_login import login_user, logout_user, login_required
 
 from extensions import db
 from models import Usuario
@@ -65,3 +65,10 @@ def login():
         return redirect(url_for("auth.login"))
 
     return render_template("auth/login.html")
+
+@auth_bp.route("/logout")
+@login_required
+def logout():
+    logout_user()
+    flash("Cerraste sesión correctamente.")
+    return redirect(url_for("home"))
