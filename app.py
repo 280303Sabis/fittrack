@@ -5,14 +5,20 @@ from extensions import db, login_manager, mail
 from models import Usuario
 
 
-def create_app():
+def create_app(config_extra=None):
     """
     Application factory: arma y devuelve la app Flask ya configurada.
     Usar una función (en vez de crear la app directo en el módulo) facilita
     las pruebas (tests) porque se puede crear una instancia nueva por test.
+
+    config_extra: diccionario opcional para sobrescribir configuración,
+    usado por las pruebas para apuntar a una base de datos de prueba en
+    vez de la base de datos real.
     """
     app = Flask(__name__)
     app.config.from_object(Config)
+    if config_extra:
+        app.config.update(config_extra)
 
     # Conectar extensiones a esta instancia de la app
     db.init_app(app)
