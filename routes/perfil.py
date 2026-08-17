@@ -1,7 +1,16 @@
-from flask import Blueprint, render_template, request, redirect, url_for, flash
+import os
+from werkzeug.utils import secure_filename
+
+from flask import Blueprint, render_template, request, redirect, url_for, flash, current_app
 from flask_login import login_required, current_user
 
 from extensions import db
+
+EXTENSIONES_PERMITIDAS = {"jpg", "jpeg", "png", "gif"}
+
+
+def extension_permitida(nombre_archivo):
+    return "." in nombre_archivo and nombre_archivo.rsplit(".", 1)[1].lower() in EXTENSIONES_PERMITIDAS
 
 perfil_bp = Blueprint("perfil", __name__, url_prefix="/perfil")
 
@@ -47,6 +56,25 @@ def ver():
         current_user.nombre = nombre
         current_user.edad = int(edad) if edad else None
         current_user.objetivo = objetivo
+
+        current_user.nombre = nombre
+        current_user.edad = int(edad) if edad else None
+        current_user.objetivo = objetivo
+
+        # Foto de perfil (opcional)
+        archivo_foto = request.files.get("foto")
+        if archivo_foto and archivo_foto.filename:
+            if not extension_permitida(archivo_foto.filename):
+                flash("Formato de imagen no permitido. Usa JPG, PNG o GIF.")
+                return redirect(url_for("perfil.ver"))
+
+            extension = archivo_foto.filename.rsplit(".", 1)[1].lower()
+            nombre_archivo = secure_filename(f"usuario_{current_user.id}.{extension}")
+            ruta_carpeta = os.path.join(current_app.root_path, "static", "img", "perfiles")
+            os.makedirs(ruta_carpeta, exist_ok=True)
+            archivo_foto.save(os.path.join(ruta_carpeta, nombre_archivo))
+
+            current_user.foto = nombre_archivo
 
         # El usuario captura en su unidad preferida; siempre guardamos en kg/cm
         if current_user.unidad_medida == "imperial":

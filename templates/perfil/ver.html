@@ -11,7 +11,24 @@
             <div class="card-body p-4">
                 <p class="small mb-4" style="color: var(--color-muted);">Correo: {{ current_user.email }}</p>
 
-                <form method="POST" action="{{ url_for('perfil.ver') }}">
+                <form method="POST" action="{{ url_for('perfil.ver') }}" enctype="multipart/form-data">
+                    <div class="mb-4 text-center">
+                        {% if current_user.foto %}
+                            <img src="{{ url_for('static', filename='img/perfiles/' + current_user.foto) }}"
+                                 alt="Foto de perfil" class="rounded-circle mb-2" style="width: 100px; height: 100px; object-fit: cover;">
+                        {% else %}
+                            <div class="rounded-circle mb-2 d-flex align-items-center justify-content-center mx-auto"
+                                 style="width: 100px; height: 100px; background-color: var(--color-border); font-size: 2rem; color: var(--color-muted);">
+                                {{ current_user.nombre[0]|upper }}
+                            </div>
+                        {% endif %}
+                        <div>
+                            <label class="form-label d-block">Foto de perfil</label>
+                            <input type="file" class="form-control" name="foto" accept=".jpg,.jpeg,.png,.gif">
+                            <p class="small mt-1 mb-0" style="color: var(--color-muted);">JPG, PNG o GIF, máximo 2 MB.</p>
+                        </div>
+                    </div>
+
                     <div class="mb-3">
                         <label class="form-label">Nombre</label>
                         <input type="text" class="form-control" name="nombre" value="{{ current_user.nombre }}" required>

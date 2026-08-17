@@ -47,6 +47,9 @@ class Usuario(db.Model, UserMixin):
     confirmado = db.Column(db.Boolean, nullable=False, default=False)
     token_confirmacion = db.Column(db.String(100), nullable=True)
 
+    # Foto de perfil: guardamos solo el nombre del archivo, no la imagen en sí
+    foto = db.Column(db.String(150), nullable=True)
+
     fecha_registro = db.Column(db.DateTime, default=datetime.utcnow)
 
     # Si se borra el usuario, se borran automáticamente todas sus rutinas

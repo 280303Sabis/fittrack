@@ -24,7 +24,11 @@
                     <li class="nav-item"><a class="nav-link" href="{{ url_for('nutricion.consejos') }}">Nutrición</a></li>
                     {% if current_user.is_authenticated %}
                         <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                            <a class="nav-link dropdown-toggle d-flex align-items-center gap-2" href="#" role="button" data-bs-toggle="dropdown">
+                                {% if current_user.foto %}
+                                    <img src="{{ url_for('static', filename='img/perfiles/' + current_user.foto) }}"
+                                         alt="" class="rounded-circle" style="width: 28px; height: 28px; object-fit: cover;">
+                                {% endif %}
                                 {{ current_user.nombre }}
                             </a>
                             <ul class="dropdown-menu dropdown-menu-end">

@@ -20,3 +20,6 @@ class Config:
     MAIL_USERNAME = os.environ.get("MAIL_USERNAME")
     MAIL_PASSWORD = os.environ.get("MAIL_PASSWORD")
     MAIL_DEFAULT_SENDER = os.environ.get("MAIL_USERNAME")
+
+    # Límite de tamaño para archivos subidos (2 MB), usado para la foto de perfil
+    MAX_CONTENT_LENGTH = 2 * 1024 * 1024
