@@ -26,6 +26,19 @@
                     <td>
                         <div>{{ r.fecha.strftime('%d/%m/%Y') }}</div>
                         <div class="small" style="color: var(--color-muted);">{{ r.fecha_registro.strftime('%H:%M') }} hrs</div>
+                        {% if r.detalle_display %}
+                        <button class="btn btn-sm btn-outline-dark mt-2" type="button" data-bs-toggle="collapse" data-bs-target="#detalle{{ r.id }}">
+                            Ver por ejercicio
+                        </button>
+                        <div class="collapse mt-2" id="detalle{{ r.id }}">
+                            {% for d in r.detalle_display %}
+                            <div class="small d-flex justify-content-between" style="max-width: 220px;">
+                                <span>{{ d.nombre }}</span>
+                                <span class="stat-number" style="color: var(--color-muted);">{{ d.tiempo }}</span>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        {% endif %}
                     </td>
                     <td class="text-end stat-number">
                         {{ r.duracion_minutos }} min

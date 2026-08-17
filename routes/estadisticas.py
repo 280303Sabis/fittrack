@@ -57,19 +57,25 @@ def resumen():
         datos_grafica.append(minutos_dia)
 
     # --- Desglose por categoría ---
-    # Cada sesión reparte su duración proporcionalmente entre las categorías
-    # presentes en su rutina, según cuántos ejercicios tiene de cada una.
-    # Ej: rutina con 3 ejercicios de pesas y 1 de cardio -> 75% del tiempo
-    # de esa sesión se cuenta como pesas, 25% como cardio.
+    # Si la sesión viene del cronómetro, ya sabemos el tiempo REAL de cada
+    # ejercicio (guardado en RegistroActividadDetalle) y lo usamos directo.
+    # Si viene de "Marcar como completada" a mano, no hay ese detalle, así
+    # que repartimos el tiempo total proporcionalmente entre las categorías
+    # presentes en la rutina (mismo cálculo estimado de antes).
     minutos_por_categoria = {"pesas": 0.0, "crossfit": 0.0, "cardio": 0.0}
     for r in registros:
-        categorias_rutina = [linea.actividad.categoria for linea in r.rutina.actividades]
-        if categorias_rutina:
-            conteo_categorias = Counter(categorias_rutina)
-            total_ejercicios = len(categorias_rutina)
-            for cat, cantidad in conteo_categorias.items():
-                proporcion = cantidad / total_ejercicios
-                minutos_por_categoria[cat] += r.duracion_minutos * proporcion
+        if r.detalles:
+            for detalle in r.detalles:
+                categoria = detalle.rutina_actividad.actividad.categoria
+                minutos_por_categoria[categoria] += detalle.duracion_segundos / 60
+        else:
+            categorias_rutina = [linea.actividad.categoria for linea in r.rutina.actividades]
+            if categorias_rutina:
+                conteo_categorias = Counter(categorias_rutina)
+                total_ejercicios = len(categorias_rutina)
+                for cat, cantidad in conteo_categorias.items():
+                    proporcion = cantidad / total_ejercicios
+                    minutos_por_categoria[cat] += r.duracion_minutos * proporcion
 
     total_minutos_categorias = sum(minutos_por_categoria.values())
     desglose_categorias = []
@@ -109,6 +115,10 @@ def historial():
     )
     for r in registros:
         r.tiempo_exacto = formato_mm_ss(r.duracion_segundos_exactos) if r.duracion_segundos_exactos else None
+        r.detalle_display = [
+            {"nombre": d.rutina_actividad.actividad.nombre, "tiempo": formato_mm_ss(d.duracion_segundos)}
+            for d in r.detalles
+        ]
     return render_template("estadisticas/historial.html", registros=registros)
 
 
@@ -119,20 +129,51 @@ def editar_registro(registro_id):
 
     if request.method == "POST":
         fecha = request.form.get("fecha")
-        duracion_minutos = request.form.get("duracion_minutos")
 
-        if not fecha or not duracion_minutos:
-            flash("Completa la fecha y la duración.")
+        if not fecha:
+            flash("Indica la fecha.")
             return redirect(url_for("estadisticas.editar_registro", registro_id=registro.id))
 
         registro.fecha = fecha
-        registro.duracion_minutos = int(duracion_minutos)
+
+        if registro.detalles:
+            # Sesión con detalle por ejercicio: la duración total se
+            # recalcula sola, sumando el tiempo de cada ejercicio.
+            for detalle in registro.detalles:
+                campo_min = f"detalle_{detalle.id}_min"
+                campo_seg = f"detalle_{detalle.id}_seg"
+                minutos_detalle = request.form.get(campo_min)
+                segundos_detalle = request.form.get(campo_seg)
+                if minutos_detalle is not None and segundos_detalle is not None:
+                    detalle.duracion_segundos = int(minutos_detalle) * 60 + int(segundos_detalle)
+
+            total_segundos = sum(d.duracion_segundos for d in registro.detalles)
+            registro.duracion_segundos_exactos = total_segundos
+            registro.duracion_minutos = max(1, round(total_segundos / 60))
+        else:
+            # Sesión registrada a mano: la duración se edita directo.
+            duracion_minutos = request.form.get("duracion_minutos")
+            if not duracion_minutos:
+                flash("Indica la duración.")
+                return redirect(url_for("estadisticas.editar_registro", registro_id=registro.id))
+            registro.duracion_minutos = int(duracion_minutos)
+
         db.session.commit()
 
         flash("Registro actualizado.")
         return redirect(url_for("estadisticas.historial"))
 
-    return render_template("estadisticas/editar_registro.html", registro=registro)
+    detalle_display = [
+        {
+            "id": d.id,
+            "nombre": d.rutina_actividad.actividad.nombre,
+            "min": d.duracion_segundos // 60,
+            "seg": d.duracion_segundos % 60,
+        }
+        for d in registro.detalles
+    ]
+
+    return render_template("estadisticas/editar_registro.html", registro=registro, detalle_display=detalle_display)
 
 
 @estadisticas_bp.route("/eliminar/<int:registro_id>", methods=["POST"])

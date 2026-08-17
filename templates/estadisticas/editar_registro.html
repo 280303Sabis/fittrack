@@ -14,11 +14,42 @@
                         <label class="form-label">Fecha</label>
                         <input type="date" class="form-control" name="fecha" value="{{ registro.fecha }}" required>
                     </div>
-                    <div class="mb-4">
-                        <label class="form-label">Duración (minutos)</label>
-                        <input type="number" class="form-control" name="duracion_minutos"
-                               value="{{ registro.duracion_minutos }}" min="1" required>
-                    </div>
+
+                    {% if detalle_display %}
+                        <div class="mb-4">
+                            <label class="form-label">Duración total</label>
+                            <p class="stat-number mb-0" style="font-size: 1.5rem;">{{ registro.duracion_minutos }} min</p>
+                        </div>
+
+                        <hr class="my-4">
+                        <span class="tag-label">Por ejercicio</span>
+                        {% for d in detalle_display %}
+                        <div class="mb-3">
+                            <label class="form-label">{{ d.nombre }}</label>
+                            <div class="row g-2">
+                                <div class="col-6">
+                                    <div class="input-group">
+                                        <input type="number" class="form-control" name="detalle_{{ d.id }}_min" value="{{ d.min }}" min="0">
+                                        <span class="input-group-text">min</span>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="input-group">
+                                        <input type="number" class="form-control" name="detalle_{{ d.id }}_seg" value="{{ d.seg }}" min="0" max="59">
+                                        <span class="input-group-text">seg</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="mb-4">
+                            <label class="form-label">Duración (minutos)</label>
+                            <input type="number" class="form-control" name="duracion_minutos"
+                                   value="{{ registro.duracion_minutos }}" min="1" required>
+                        </div>
+                    {% endif %}
+
                     <button type="submit" class="btn btn-dark w-100">Guardar cambios</button>
                 </form>
             </div>
