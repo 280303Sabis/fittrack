@@ -23,9 +23,15 @@ def registro():
         edad = request.form.get("edad")
         objetivo = request.form.get("objetivo")
 
+        acepta_privacidad = request.form.get("acepta_privacidad")
+
         # Validación básica: estos 4 son obligatorios
         if not nombre or not email or not password or not objetivo:
             flash("Nombre, correo, contraseña y objetivo son obligatorios.")
+            return redirect(url_for("auth.registro"))
+
+        if not acepta_privacidad:
+            flash("Debes aceptar el Aviso de Privacidad para registrarte.")
             return redirect(url_for("auth.registro"))
 
         es_segura, mensaje_error = password_es_segura(password)

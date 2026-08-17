@@ -52,6 +52,13 @@
                         </select>
                     </div>
 
+                    <div class="mb-4 form-check">
+                        <input type="checkbox" class="form-check-input" id="aceptaPrivacidad" name="acepta_privacidad" required>
+                        <label class="form-check-label small" for="aceptaPrivacidad">
+                            He leído y acepto el <a href="{{ url_for('privacidad') }}" target="_blank">Aviso de Privacidad</a>.
+                        </label>
+                    </div>
+
                     <button type="submit" class="btn btn-dark w-100">Registrarme</button>
                 </form>
             </div>

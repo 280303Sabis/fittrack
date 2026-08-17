@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block title %}Aviso de Privacidad — FitTrack{% endblock %}
+{% block content %}
+
+<span class="tag-label">Legal</span>
+<h2 class="mb-4">Aviso de Privacidad</h2>
+
+<div class="card">
+    <div class="card-body p-4">
+        <h5>1. Responsable de tus datos</h5>
+        <p style="color: var(--color-muted);">FitTrack es una aplicación desarrollada con fines escolares, encargada de recabar y tratar los datos personales que proporcionas al registrarte.</p>
+
+        <h5 class="mt-4">2. Datos que recabamos</h5>
+        <p style="color: var(--color-muted);">Nombre, correo electrónico, contraseña (almacenada de forma cifrada), y de manera opcional: peso, altura, edad y objetivo físico.</p>
+
+        <h5 class="mt-4">3. Finalidad del tratamiento</h5>
+        <p style="color: var(--color-muted);">Tus datos se utilizan exclusivamente para: crear y proteger tu cuenta, personalizar las rutinas y consejos de nutrición que se te muestran, y calcular tus estadísticas de progreso dentro de la aplicación.</p>
+
+        <h5 class="mt-4">4. Protección de tus datos</h5>
+        <p style="color: var(--color-muted);">Tu contraseña nunca se almacena en texto plano, solo como un valor cifrado (hash). Las credenciales del sistema se manejan mediante variables de entorno, fuera del código fuente.</p>
+
+        <h5 class="mt-4">5. Tus derechos (Acceso, Rectificación, Cancelación y Oposición)</h5>
+        <p style="color: var(--color-muted);">En cualquier momento puedes: consultar y editar tus datos desde "Mi perfil", descargar una copia de toda tu información desde "Configuración → Descargar mis datos", y eliminar tu cuenta junto con todos tus datos de forma permanente desde "Configuración → Eliminar mi cuenta".</p>
+
+        <h5 class="mt-4">6. Cambios a este aviso</h5>
+        <p style="color: var(--color-muted);">Este aviso puede actualizarse conforme evolucione la aplicación. Te recomendamos revisarlo periódicamente.</p>
+    </div>
+</div>
+
+{% endblock %}

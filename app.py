@@ -59,6 +59,10 @@ def create_app(config_extra=None):
     def home():
         return render_template("home.html")
 
+    @app.route("/privacidad")
+    def privacidad():
+        return render_template("privacidad.html")
+
     # Crear las tablas si no existen (en MySQL, base de datos fittrack_db)
     with app.app_context():
         db.create_all()
