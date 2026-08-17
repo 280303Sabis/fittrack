@@ -1,7 +1,11 @@
-from flask import Blueprint, render_template, request, redirect, url_for, flash
+import csv
+import io
+
+from flask import Blueprint, render_template, request, redirect, url_for, flash, Response
 from flask_login import login_required, current_user, logout_user
 
 from extensions import db
+from models import RegistroActividad
 
 configuracion_bp = Blueprint("configuracion", __name__, url_prefix="/configuracion")
 
@@ -71,3 +75,39 @@ def eliminar_cuenta():
         return redirect(url_for("home"))
 
     return render_template("configuracion/eliminar_cuenta.html")
+
+@configuracion_bp.route("/exportar-datos")
+@login_required
+def exportar_datos():
+    registros = (
+        RegistroActividad.query.filter_by(usuario_id=current_user.id)
+        .order_by(RegistroActividad.fecha.desc())
+        .all()
+    )
+
+    salida = io.StringIO()
+    escritor = csv.writer(salida)
+
+    # Sección 1: datos de perfil
+    escritor.writerow(["--- PERFIL ---"])
+    escritor.writerow(["Nombre", "Correo", "Peso (kg)", "Altura (cm)", "Edad", "Objetivo", "Meta semanal (min)"])
+    escritor.writerow([
+        current_user.nombre, current_user.email, current_user.peso_kg,
+        current_user.altura_cm, current_user.edad, current_user.objetivo,
+        current_user.meta_minutos_semana,
+    ])
+    escritor.writerow([])
+
+    # Sección 2: historial de sesiones
+    escritor.writerow(["--- HISTORIAL DE ACTIVIDAD ---"])
+    escritor.writerow(["Rutina", "Fecha", "Duración (min)"])
+    for r in registros:
+        escritor.writerow([r.rutina.nombre, r.fecha.strftime("%d/%m/%Y"), r.duracion_minutos])
+
+    salida.seek(0)
+    contenido = "\ufeff" + salida.getvalue()  # BOM: le dice a Excel que el archivo es UTF-8
+    return Response(
+        contenido,
+        mimetype="text/csv",
+        headers={"Content-Disposition": "attachment; filename=fittrack_mis_datos.csv"},
+    )
