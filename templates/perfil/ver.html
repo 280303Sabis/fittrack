@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% block title %}Mi perfil — FitTrack{% endblock %}
+{% block content %}
+
+<span class="tag-label">Tu cuenta</span>
+<h2 class="mb-4">Mi perfil</h2>
+
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-body p-4">
+                <p class="small mb-4" style="color: var(--color-muted);">Correo: {{ current_user.email }}</p>
+
+                <form method="POST" action="{{ url_for('perfil.ver') }}">
+                    <div class="mb-3">
+                        <label class="form-label">Nombre</label>
+                        <input type="text" class="form-control" name="nombre" value="{{ current_user.nombre }}" required>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">Peso (kg)</label>
+                            <input type="number" step="0.1" class="form-control" name="peso_kg" value="{{ current_user.peso_kg or '' }}">
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">Altura (cm)</label>
+                            <input type="number" step="0.1" class="form-control" name="altura_cm" value="{{ current_user.altura_cm or '' }}">
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">Edad</label>
+                            <input type="number" class="form-control" name="edad" value="{{ current_user.edad or '' }}">
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label">Objetivo</label>
+                        <select class="form-select" name="objetivo" required>
+                            {% for valor, etiqueta in nombres_objetivo.items() %}
+                                <option value="{{ valor }}" {% if current_user.objetivo == valor %}selected{% endif %}>{{ etiqueta }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <button type="submit" class="btn btn-dark w-100">Guardar cambios</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
