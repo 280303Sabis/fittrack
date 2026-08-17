@@ -7,6 +7,7 @@ from flask_mail import Message
 
 from extensions import db, mail
 from models import Usuario
+from utils import password_es_segura
 
 auth_bp = Blueprint("auth", __name__, url_prefix="/auth")
 
@@ -25,6 +26,11 @@ def registro():
         # Validación básica: estos 4 son obligatorios
         if not nombre or not email or not password or not objetivo:
             flash("Nombre, correo, contraseña y objetivo son obligatorios.")
+            return redirect(url_for("auth.registro"))
+
+        es_segura, mensaje_error = password_es_segura(password)
+        if not es_segura:
+            flash(mensaje_error)
             return redirect(url_for("auth.registro"))
 
         usuario_existente = Usuario.query.filter_by(email=email).first()
@@ -118,6 +124,11 @@ def restablecer(token):
         password = request.form.get("password")
         if not password:
             flash("Escribe una nueva contraseña.")
+            return redirect(url_for("auth.restablecer", token=token))
+
+        es_segura, mensaje_error = password_es_segura(password)
+        if not es_segura:
+            flash(mensaje_error)
             return redirect(url_for("auth.restablecer", token=token))
 
         usuario.set_password(password)

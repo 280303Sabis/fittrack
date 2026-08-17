@@ -6,6 +6,7 @@ from flask_login import login_required, current_user, logout_user
 
 from extensions import db
 from models import RegistroActividad
+from utils import password_es_segura
 
 configuracion_bp = Blueprint("configuracion", __name__, url_prefix="/configuracion")
 
@@ -53,6 +54,11 @@ def cambiar_password():
 
         if not password_nueva:
             flash("Escribe una contraseña nueva.")
+            return redirect(url_for("configuracion.cambiar_password"))
+
+        es_segura, mensaje_error = password_es_segura(password_nueva)
+        if not es_segura:
+            flash(mensaje_error)
             return redirect(url_for("configuracion.cambiar_password"))
 
         current_user.set_password(password_nueva)
