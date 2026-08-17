@@ -5,9 +5,9 @@
 <span class="tag-label">Ajustes</span>
 <h2 class="mb-4">Configuración</h2>
 
-<div class="row justify-content-center">
-    <div class="col-md-6">
-        <div class="card mb-3">
+<div class="row g-3">
+    <div class="col-md-4">
+        <div class="card">
             <div class="card-body p-4">
                 <h5 class="mb-3">Meta semanal</h5>
                 <form method="POST" action="{{ url_for('configuracion.ver') }}" id="formMeta">
@@ -37,12 +37,16 @@
                 </form>
             </div>
         </div>
+    </div>
 
+    <div class="col-md-4">
         <div class="card mb-3">
             <div class="card-body p-4">
                 <h5 class="mb-3">Unidades de medida</h5>
                 <form method="POST" action="{{ url_for('configuracion.ver') }}">
                     <input type="hidden" name="meta_minutos_semana" value="{{ current_user.meta_minutos_semana }}">
+                    <input type="hidden" name="meta_dias_semana" value="{{ current_user.meta_dias_semana }}">
+                    <input type="hidden" name="tipo_meta" value="{{ current_user.tipo_meta }}">
                     <div class="mb-3">
                         <select class="form-select" name="unidad_medida">
                             <option value="metrico" {% if current_user.unidad_medida != 'imperial' %}selected{% endif %}>Métrico (kg, cm)</option>
@@ -54,13 +58,15 @@
             </div>
         </div>
 
-        <div class="card mb-3">
+        <div class="card">
             <div class="card-body p-4">
                 <h5 class="mb-3">Tus datos</h5>
                 <a href="{{ url_for('configuracion.exportar_datos') }}" class="btn btn-outline-dark w-100">Descargar mis datos (CSV)</a>
             </div>
         </div>
+    </div>
 
+    <div class="col-md-4">
         <div class="card mb-3">
             <div class="card-body p-4">
                 <h5 class="mb-3">Seguridad</h5>
