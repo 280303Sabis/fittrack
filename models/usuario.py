@@ -39,6 +39,10 @@ class Usuario(db.Model, UserMixin):
     token_recuperacion = db.Column(db.String(100), nullable=True)
     token_expira = db.Column(db.DateTime, nullable=True)
 
+    # Para bloqueo de cuenta tras intentos fallidos de login
+    intentos_fallidos = db.Column(db.Integer, nullable=False, default=0)
+    bloqueado_hasta = db.Column(db.DateTime, nullable=True)
+
     fecha_registro = db.Column(db.DateTime, default=datetime.utcnow)
 
     # Si se borra el usuario, se borran automáticamente todas sus rutinas

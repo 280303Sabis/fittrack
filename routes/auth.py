@@ -72,10 +72,37 @@ def login():
 
         usuario = Usuario.query.filter_by(email=email).first()
 
+        # Si la cuenta está bloqueada y el bloqueo sigue vigente, no dejamos
+        # ni intentar la contraseña (evita seguir probando por fuerza bruta).
+        if usuario and usuario.bloqueado_hasta and usuario.bloqueado_hasta > datetime.utcnow():
+            minutos_restantes = int((usuario.bloqueado_hasta - datetime.utcnow()).total_seconds() / 60) + 1
+            flash(f"Cuenta bloqueada temporalmente por demasiados intentos fallidos. Intenta de nuevo en {minutos_restantes} minuto(s).")
+            return redirect(url_for("auth.login"))
+
         if usuario and usuario.check_password(password):
+            # Login correcto: reiniciamos el contador de intentos fallidos
+            usuario.intentos_fallidos = 0
+            usuario.bloqueado_hasta = None
+            db.session.commit()
+
             login_user(usuario)
             flash(f"¡Hola de nuevo, {usuario.nombre}!")
             return redirect(url_for("home"))
+
+        # Login incorrecto: si el correo existe, contamos el intento fallido
+        if usuario:
+            usuario.intentos_fallidos += 1
+            if usuario.intentos_fallidos >= 3:
+                usuario.bloqueado_hasta = datetime.utcnow() + timedelta(minutes=15)
+                usuario.intentos_fallidos = 0
+                db.session.commit()
+                flash("Cuenta bloqueada temporalmente por 15 minutos, por demasiados intentos fallidos.")
+                return redirect(url_for("auth.login"))
+
+            intentos_restantes = 3 - usuario.intentos_fallidos
+            db.session.commit()
+            flash(f"Correo o contraseña incorrectos. Te quedan {intentos_restantes} intento(s) antes de que tu cuenta se bloquee temporalmente.")
+            return redirect(url_for("auth.login"))
 
         flash("Correo o contraseña incorrectos.")
         return redirect(url_for("auth.login"))
