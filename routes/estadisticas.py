@@ -42,6 +42,9 @@ def resumen():
         racha_dias += 1
         dia -= timedelta(days=1)
 
+    # Sesiones completadas esta semana (para la meta por días)
+    sesiones_semana = len({r.fecha for r in registros if r.fecha >= inicio_semana})
+
     total_sesiones = len(registros)
     ultimos_registros = registros[:5]
     for r in ultimos_registros:
@@ -88,8 +91,17 @@ def resumen():
         })
 
     # --- Meta semanal ---
-    meta_semanal = current_user.meta_minutos_semana or 150
-    progreso_meta = min(100, round((minutos_semana / meta_semanal) * 100)) if meta_semanal else 0
+    # Puede ser en minutos o en días entrenados, según lo que el usuario
+    # haya elegido en Configuración.
+    tipo_meta = current_user.tipo_meta or "minutos"
+    if tipo_meta == "dias":
+        meta_semanal = current_user.meta_dias_semana or 5
+        progreso_actual = sesiones_semana
+        progreso_meta = min(100, round((progreso_actual / meta_semanal) * 100)) if meta_semanal else 0
+    else:
+        meta_semanal = current_user.meta_minutos_semana or 150
+        progreso_actual = minutos_semana
+        progreso_meta = min(100, round((progreso_actual / meta_semanal) * 100)) if meta_semanal else 0
 
     return render_template(
         "estadisticas/resumen.html",
@@ -100,7 +112,9 @@ def resumen():
         labels_grafica=labels_grafica,
         datos_grafica=datos_grafica,
         desglose_categorias=desglose_categorias,
+        tipo_meta=tipo_meta,
         meta_semanal=meta_semanal,
+        progreso_actual=progreso_actual,
         progreso_meta=progreso_meta,
     )
 

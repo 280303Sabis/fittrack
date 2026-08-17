@@ -10,13 +10,29 @@
         <div class="card mb-3">
             <div class="card-body p-4">
                 <h5 class="mb-3">Meta semanal</h5>
-                <form method="POST" action="{{ url_for('configuracion.ver') }}">
+                <form method="POST" action="{{ url_for('configuracion.ver') }}" id="formMeta">
                     <input type="hidden" name="unidad_medida" value="{{ current_user.unidad_medida }}">
-                    <div class="mb-4">
+
+                    <div class="mb-3">
+                        <label class="form-label">Tipo de meta</label>
+                        <select class="form-select" name="tipo_meta" id="tipoMeta">
+                            <option value="minutos" {% if current_user.tipo_meta != 'dias' %}selected{% endif %}>Minutos de actividad</option>
+                            <option value="dias" {% if current_user.tipo_meta == 'dias' %}selected{% endif %}>Días entrenados</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-4" id="campoMinutos" style="{% if current_user.tipo_meta == 'dias' %}display:none;{% endif %}">
                         <label class="form-label">Minutos de actividad por semana</label>
                         <input type="number" class="form-control" name="meta_minutos_semana"
-                               value="{{ current_user.meta_minutos_semana }}" min="1" required>
+                               value="{{ current_user.meta_minutos_semana }}" min="1">
                     </div>
+
+                    <div class="mb-4" id="campoDias" style="{% if current_user.tipo_meta != 'dias' %}display:none;{% endif %}">
+                        <label class="form-label">Días entrenados por semana</label>
+                        <input type="number" class="form-control" name="meta_dias_semana"
+                               value="{{ current_user.meta_dias_semana }}" min="1" max="7">
+                    </div>
+
                     <button type="submit" class="btn btn-dark w-100">Guardar</button>
                 </form>
             </div>
@@ -62,5 +78,13 @@
         </div>
     </div>
 </div>
+
+<script>
+    document.getElementById('tipoMeta').addEventListener('change', function () {
+        const esDias = this.value === 'dias';
+        document.getElementById('campoMinutos').style.display = esDias ? 'none' : 'block';
+        document.getElementById('campoDias').style.display = esDias ? 'block' : 'none';
+    });
+</script>
 
 {% endblock %}

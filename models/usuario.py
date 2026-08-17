@@ -26,6 +26,12 @@ class Usuario(db.Model, UserMixin):
     # Meta personal de minutos de actividad por semana (para la barra de progreso)
     meta_minutos_semana = db.Column(db.Integer, nullable=True, default=150)
 
+    # Tipo de meta semanal: 'minutos' o 'dias'
+    tipo_meta = db.Column(db.String(10), nullable=True, default="minutos")
+
+    # Meta en días entrenados por semana (se usa solo si tipo_meta == 'dias')
+    meta_dias_semana = db.Column(db.Integer, nullable=True, default=5)
+
     # Preferencia de unidades: 'metrico' (kg/cm) o 'imperial' (lb/in)
     unidad_medida = db.Column(db.String(10), nullable=True, default="metrico")
 

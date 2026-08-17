@@ -14,14 +14,23 @@ configuracion_bp = Blueprint("configuracion", __name__, url_prefix="/configuraci
 @login_required
 def ver():
     if request.method == "POST":
+        tipo_meta = request.form.get("tipo_meta")
         meta_minutos_semana = request.form.get("meta_minutos_semana")
+        meta_dias_semana = request.form.get("meta_dias_semana")
         unidad_medida = request.form.get("unidad_medida")
 
-        if not meta_minutos_semana or int(meta_minutos_semana) < 1:
-            flash("Indica una meta semanal válida.")
-            return redirect(url_for("configuracion.ver"))
+        if tipo_meta == "dias":
+            if not meta_dias_semana or int(meta_dias_semana) < 1 or int(meta_dias_semana) > 7:
+                flash("Indica una meta de días válida (entre 1 y 7).")
+                return redirect(url_for("configuracion.ver"))
+            current_user.meta_dias_semana = int(meta_dias_semana)
+        else:
+            if not meta_minutos_semana or int(meta_minutos_semana) < 1:
+                flash("Indica una meta semanal válida.")
+                return redirect(url_for("configuracion.ver"))
+            current_user.meta_minutos_semana = int(meta_minutos_semana)
 
-        current_user.meta_minutos_semana = int(meta_minutos_semana)
+        current_user.tipo_meta = tipo_meta
         current_user.unidad_medida = unidad_medida
         db.session.commit()
 

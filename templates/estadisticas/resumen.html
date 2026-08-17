@@ -9,7 +9,11 @@
     <div class="card-body">
         <div class="d-flex justify-content-between mb-2">
             <span class="small fw-bold">Meta semanal</span>
-            <span class="small stat-number">{{ minutos_semana }} / {{ meta_semanal }} min</span>
+            {% if tipo_meta == 'dias' %}
+                <span class="small stat-number">{{ progreso_actual }} / {{ meta_semanal }} día{{ 's' if meta_semanal != 1 else '' }}</span>
+            {% else %}
+                <span class="small stat-number">{{ progreso_actual }} / {{ meta_semanal }} min</span>
+            {% endif %}
         </div>
         <div class="progress" style="height: 10px;">
             <div class="progress-bar" style="width: {{ progreso_meta }}%; background-color: var(--color-secondary);"></div>
