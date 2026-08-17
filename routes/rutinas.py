@@ -1,8 +1,10 @@
+import json
+
 from flask import Blueprint, render_template, request, redirect, url_for, flash
 from flask_login import login_required, current_user
 
 from extensions import db
-from models import Rutina, Actividad, RutinaActividad, RegistroActividad
+from models import Rutina, Actividad, RutinaActividad, RegistroActividad, RegistroActividadDetalle
 
 rutinas_bp = Blueprint("rutinas", __name__, url_prefix="/rutinas")
 
@@ -84,12 +86,29 @@ def completar(rutina_id):
             flash("Indica cuánto duró tu sesión.")
             return redirect(url_for("rutinas.completar", rutina_id=rutina.id))
 
+        duracion_segundos_exactos = request.form.get("duracion_segundos_exactos")
+        detalle_por_ejercicio = request.form.get("detalle_por_ejercicio")
+
         registro = RegistroActividad(
             usuario_id=current_user.id,
             rutina_id=rutina.id,
             duracion_minutos=int(duracion_minutos),
+            duracion_segundos_exactos=int(duracion_segundos_exactos) if duracion_segundos_exactos else None,
         )
         db.session.add(registro)
+        db.session.flush()  # asigna registro.id sin cerrar la transacción todavía
+
+        # Si viene del cronómetro, guardamos el tiempo de cada ejercicio
+        if detalle_por_ejercicio:
+            tiempos = json.loads(detalle_por_ejercicio)
+            for linea_id_texto, segundos in tiempos.items():
+                detalle = RegistroActividadDetalle(
+                    registro_id=registro.id,
+                    rutina_actividad_id=int(linea_id_texto),
+                    duracion_segundos=int(segundos),
+                )
+                db.session.add(detalle)
+
         db.session.commit()
 
         flash(f"¡Rutina '{rutina.nombre}' completada! Buen trabajo.")
@@ -132,3 +151,10 @@ def quitar_actividad(rutina_id, linea_id):
 
     flash(f"'{nombre}' se quitó de la rutina.")
     return redirect(url_for("rutinas.detalle", rutina_id=rutina.id))
+
+
+@rutinas_bp.route("/<int:rutina_id>/entrenar")
+@login_required
+def entrenar(rutina_id):
+    rutina = Rutina.query.filter_by(id=rutina_id, usuario_id=current_user.id).first_or_404()
+    return render_template("rutinas/entrenar.html", rutina=rutina)

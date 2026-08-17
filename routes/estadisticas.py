@@ -12,6 +12,13 @@ estadisticas_bp = Blueprint("estadisticas", __name__, url_prefix="/estadisticas"
 NOMBRES_CATEGORIA = {"pesas": "Pesas / Gimnasio", "crossfit": "Crossfit", "cardio": "Cardio"}
 
 
+def formato_mm_ss(segundos):
+    """Convierte segundos totales a texto 'MM:SS', ej. 125 -> '02:05'."""
+    minutos = segundos // 60
+    seg_restantes = segundos % 60
+    return f"{minutos:02d}:{seg_restantes:02d}"
+
+
 @estadisticas_bp.route("/")
 @login_required
 def resumen():
@@ -37,6 +44,8 @@ def resumen():
 
     total_sesiones = len(registros)
     ultimos_registros = registros[:5]
+    for r in ultimos_registros:
+        r.tiempo_exacto = formato_mm_ss(r.duracion_segundos_exactos) if r.duracion_segundos_exactos else None
 
     dias_semana_es = ["Lun", "Mar", "Mié", "Jue", "Vie", "Sáb", "Dom"]
     labels_grafica = []
@@ -48,14 +57,19 @@ def resumen():
         datos_grafica.append(minutos_dia)
 
     # --- Desglose por categoría ---
-    # Cada sesión se asigna a la categoría dominante de su rutina
-    # (la que más ejercicios tiene), y le sumamos su duración completa.
-    minutos_por_categoria = {"pesas": 0, "crossfit": 0, "cardio": 0}
+    # Cada sesión reparte su duración proporcionalmente entre las categorías
+    # presentes en su rutina, según cuántos ejercicios tiene de cada una.
+    # Ej: rutina con 3 ejercicios de pesas y 1 de cardio -> 75% del tiempo
+    # de esa sesión se cuenta como pesas, 25% como cardio.
+    minutos_por_categoria = {"pesas": 0.0, "crossfit": 0.0, "cardio": 0.0}
     for r in registros:
         categorias_rutina = [linea.actividad.categoria for linea in r.rutina.actividades]
         if categorias_rutina:
-            categoria_dominante = Counter(categorias_rutina).most_common(1)[0][0]
-            minutos_por_categoria[categoria_dominante] += r.duracion_minutos
+            conteo_categorias = Counter(categorias_rutina)
+            total_ejercicios = len(categorias_rutina)
+            for cat, cantidad in conteo_categorias.items():
+                proporcion = cantidad / total_ejercicios
+                minutos_por_categoria[cat] += r.duracion_minutos * proporcion
 
     total_minutos_categorias = sum(minutos_por_categoria.values())
     desglose_categorias = []
@@ -63,7 +77,7 @@ def resumen():
         porcentaje = round((minutos / total_minutos_categorias) * 100) if total_minutos_categorias else 0
         desglose_categorias.append({
             "nombre": NOMBRES_CATEGORIA[cat],
-            "minutos": minutos,
+            "minutos": round(minutos),
             "porcentaje": porcentaje,
         })
 
@@ -93,6 +107,8 @@ def historial():
         .order_by(RegistroActividad.fecha.desc())
         .all()
     )
+    for r in registros:
+        r.tiempo_exacto = formato_mm_ss(r.duracion_segundos_exactos) if r.duracion_segundos_exactos else None
     return render_template("estadisticas/historial.html", registros=registros)
 
 

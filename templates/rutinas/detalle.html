@@ -11,6 +11,7 @@
     </div>
     <div>
         {% if rutina.actividades %}
+        <a href="{{ url_for('rutinas.entrenar', rutina_id=rutina.id) }}" class="btn btn-outline-dark me-2">▶ Iniciar entrenamiento</a>
         <a href="{{ url_for('rutinas.completar', rutina_id=rutina.id) }}" class="btn btn-outline-dark me-2">✓ Marcar como completada</a>
         {% endif %}
         <a href="{{ url_for('actividades.lista', rutina_id=rutina.id) }}" class="btn btn-dark">+ Agregar ejercicio</a>

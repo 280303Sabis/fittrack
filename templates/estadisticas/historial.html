@@ -23,8 +23,14 @@
                 {% for r in registros %}
                 <tr>
                     <td class="ps-4">{{ r.rutina.nombre }}</td>
-                    <td>{{ r.fecha.strftime('%d/%m/%Y') }}</td>
-                    <td class="text-end stat-number">{{ r.duracion_minutos }} min</td>
+                    <td>
+                        <div>{{ r.fecha.strftime('%d/%m/%Y') }}</div>
+                        <div class="small" style="color: var(--color-muted);">{{ r.fecha_registro.strftime('%H:%M') }} hrs</div>
+                    </td>
+                    <td class="text-end stat-number">
+                        {{ r.duracion_minutos }} min
+                        {% if r.tiempo_exacto %}<span class="small" style="color: var(--color-muted);">({{ r.tiempo_exacto }})</span>{% endif %}
+                    </td>
                     <td class="pe-4 text-end" style="white-space: nowrap;">
                         <a href="{{ url_for('estadisticas.editar_registro', registro_id=r.id) }}"
                            class="btn btn-sm btn-outline-dark">Editar</a>

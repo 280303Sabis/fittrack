@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+{% block title %}Entrenando: {{ rutina.nombre }} — FitTrack{% endblock %}
+{% block content %}
+
+<span class="tag-label">Entrenamiento en curso</span>
+<h2 class="mb-4">{{ rutina.nombre }}</h2>
+
+<div class="card mb-4">
+    <div class="card-body text-center py-5">
+        <p class="mb-2" style="color: var(--color-muted);">Tiempo transcurrido</p>
+        <p id="cronometro" class="stat-number mb-0" style="font-size: 4rem;">00:00</p>
+    </div>
+</div>
+
+<h5 class="mb-3">Marca cada ejercicio conforme lo hagas</h5>
+<div class="card mb-4">
+    <div class="card-body">
+        {% for linea in rutina.actividades %}
+        <div class="form-check py-2 border-bottom d-flex justify-content-between align-items-center">
+            <div>
+                <input class="form-check-input linea-checkbox" type="checkbox"
+                       id="ej{{ linea.id }}" data-linea-id="{{ linea.id }}">
+                <label class="form-check-label" for="ej{{ linea.id }}">
+                    {{ linea.actividad.nombre }}
+                    {% if linea.series %}
+                        <span class="small stat-number" style="color: var(--color-muted);"> — {{ linea.series }} series × {{ linea.repeticiones }} reps</span>
+                    {% elif linea.duracion_minutos %}
+                        <span class="small stat-number" style="color: var(--color-muted);"> — {{ linea.duracion_minutos }} min</span>
+                    {% endif %}
+                </label>
+            </div>
+            <span class="small stat-number" id="tiempo{{ linea.id }}" style="color: var(--color-accent); min-width: 50px; text-align: right;"></span>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<form method="POST" action="{{ url_for('rutinas.completar', rutina_id=rutina.id) }}" id="formFinalizar">
+    <input type="hidden" name="duracion_minutos" id="duracionInput">
+    <input type="hidden" name="duracion_segundos_exactos" id="segundosInput">
+    <input type="hidden" name="detalle_por_ejercicio" id="detalleInput">
+    <button type="submit" class="btn btn-dark w-100 py-3" id="btnFinalizar" disabled>Marca todos los ejercicios para finalizar</button>
+</form>
+
+<script>
+    let segundos = 0;
+    let tiempoUltimoCheck = 0;  // en qué segundo se marcó el último ejercicio
+    const tiemposPorLinea = {};  // { linea_id: segundos_que_tomó }
+
+    const cronometroEl = document.getElementById('cronometro');
+    const btnFinalizar = document.getElementById('btnFinalizar');
+    const checkboxes = document.querySelectorAll('.linea-checkbox');
+
+    function actualizarCronometro() {
+        segundos++;
+        const min = String(Math.floor(segundos / 60)).padStart(2, '0');
+        const seg = String(segundos % 60).padStart(2, '0');
+        cronometroEl.textContent = `${min}:${seg}`;
+    }
+
+    setInterval(actualizarCronometro, 1000);
+
+    function revisarProgreso() {
+        const todosMarcados = Array.from(checkboxes).every(cb => cb.checked);
+        btnFinalizar.disabled = !todosMarcados;
+        btnFinalizar.textContent = todosMarcados
+            ? 'Finalizar entrenamiento'
+            : 'Marca todos los ejercicios para finalizar';
+    }
+
+    checkboxes.forEach(cb => {
+        cb.addEventListener('change', function () {
+            const lineaId = this.dataset.lineaId;
+
+            if (this.checked) {
+                const tiempoEjercicio = segundos - tiempoUltimoCheck;
+                tiemposPorLinea[lineaId] = tiempoEjercicio;
+                tiempoUltimoCheck = segundos;
+
+                const min = String(Math.floor(tiempoEjercicio / 60)).padStart(2, '0');
+                const seg = String(tiempoEjercicio % 60).padStart(2, '0');
+                document.getElementById('tiempo' + lineaId).textContent = `${min}:${seg}`;
+            } else {
+                // Si lo desmarca, le regresamos su tiempo al "bote" del siguiente ejercicio
+                tiempoUltimoCheck -= (tiemposPorLinea[lineaId] || 0);
+                delete tiemposPorLinea[lineaId];
+                document.getElementById('tiempo' + lineaId).textContent = '';
+            }
+
+            revisarProgreso();
+        });
+    });
+
+    document.getElementById('formFinalizar').addEventListener('submit', function () {
+        const minutosFinales = Math.max(1, Math.round(segundos / 60));
+        document.getElementById('duracionInput').value = minutosFinales;
+        document.getElementById('segundosInput').value = segundos;
+        document.getElementById('detalleInput').value = JSON.stringify(tiemposPorLinea);
+    });
+</script>
+
+{% endblock %}

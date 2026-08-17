@@ -17,10 +17,12 @@ class RegistroActividad(db.Model):
 
     fecha = db.Column(db.Date, nullable=False, default=datetime.utcnow)
     duracion_minutos = db.Column(db.Integer, nullable=False)
+    duracion_segundos_exactos = db.Column(db.Integer, nullable=True)  # tiempo exacto en segundos, solo cuando viene del cronómetro
 
     fecha_registro = db.Column(db.DateTime, default=datetime.utcnow)
 
     rutina = db.relationship("Rutina")
+    detalles = db.relationship("RegistroActividadDetalle", backref="registro", cascade="all, delete-orphan")
 
     def __repr__(self):
         return f"<RegistroActividad rutina={self.rutina_id} fecha={self.fecha}>"
