@@ -7,6 +7,17 @@
 <span class="tag-label">Historial completo</span>
 <h2 class="mb-4">Todas tus sesiones</h2>
 
+<form method="GET" action="{{ url_for('estadisticas.historial') }}" class="mb-4" style="max-width: 400px;">
+    <div class="input-group">
+        <input type="text" class="form-control" name="q" value="{{ busqueda }}"
+               placeholder="Buscar por nombre de rutina...">
+        <button type="submit" class="btn btn-dark">Buscar</button>
+        {% if busqueda %}
+            <a href="{{ url_for('estadisticas.historial') }}" class="btn btn-outline-dark">Limpiar</a>
+        {% endif %}
+    </div>
+</form>
+
 {% if registros %}
 <div class="card">
     <div class="card-body p-0">
@@ -59,10 +70,30 @@
         </table>
     </div>
 </div>
-<p class="small mt-3" style="color: var(--color-muted);">{{ registros|length }} sesiones en total</p>
+
+<div class="d-flex justify-content-between align-items-center mt-3">
+    <p class="small mb-0" style="color: var(--color-muted);">{{ total_registros }} sesiones en total</p>
+
+    {% if total_paginas > 1 %}
+    <div class="d-flex gap-2">
+        {% if pagina > 1 %}
+            <a href="{{ url_for('estadisticas.historial', pagina=pagina-1, q=busqueda) }}" class="btn btn-sm btn-outline-dark">← Anterior</a>
+        {% endif %}
+        <span class="small align-self-center" style="color: var(--color-muted);">Página {{ pagina }} de {{ total_paginas }}</span>
+        {% if pagina < total_paginas %}
+            <a href="{{ url_for('estadisticas.historial', pagina=pagina+1, q=busqueda) }}" class="btn btn-sm btn-outline-dark">Siguiente →</a>
+        {% endif %}
+    </div>
+    {% endif %}
+</div>
+
 {% else %}
 <div class="text-center py-5">
-    <p style="color: var(--color-muted);">Todavía no has completado ninguna rutina.</p>
+    {% if busqueda %}
+        <p style="color: var(--color-muted);">No se encontraron sesiones para "{{ busqueda }}".</p>
+    {% else %}
+        <p style="color: var(--color-muted);">Todavía no has completado ninguna rutina.</p>
+    {% endif %}
 </div>
 {% endif %}
 

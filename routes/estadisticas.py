@@ -5,7 +5,7 @@ from flask import Blueprint, render_template, request, redirect, url_for, flash
 from flask_login import login_required, current_user
 
 from extensions import db
-from models import RegistroActividad
+from models import RegistroActividad, Rutina
 
 estadisticas_bp = Blueprint("estadisticas", __name__, url_prefix="/estadisticas")
 
@@ -122,18 +122,42 @@ def resumen():
 @estadisticas_bp.route("/historial")
 @login_required
 def historial():
-    registros = (
-        RegistroActividad.query.filter_by(usuario_id=current_user.id)
-        .order_by(RegistroActividad.fecha.desc())
-        .all()
+    busqueda = request.args.get("q", "").strip()
+    pagina = request.args.get("pagina", 1, type=int)
+    por_pagina = 10
+
+    query = (
+        RegistroActividad.query
+        .join(Rutina)
+        .filter(RegistroActividad.usuario_id == current_user.id)
     )
+
+    if busqueda:
+        query = query.filter(Rutina.nombre.ilike(f"%{busqueda}%"))
+
+    query = query.order_by(RegistroActividad.fecha.desc())
+
+    total_registros = query.count()
+    total_paginas = max(1, (total_registros + por_pagina - 1) // por_pagina)
+    pagina = max(1, min(pagina, total_paginas))
+
+    registros = query.offset((pagina - 1) * por_pagina).limit(por_pagina).all()
+
     for r in registros:
         r.tiempo_exacto = formato_mm_ss(r.duracion_segundos_exactos) if r.duracion_segundos_exactos else None
         r.detalle_display = [
             {"nombre": d.rutina_actividad.actividad.nombre, "tiempo": formato_mm_ss(d.duracion_segundos)}
             for d in r.detalles
         ]
-    return render_template("estadisticas/historial.html", registros=registros)
+
+    return render_template(
+        "estadisticas/historial.html",
+        registros=registros,
+        busqueda=busqueda,
+        pagina=pagina,
+        total_paginas=total_paginas,
+        total_registros=total_registros,
+    )
 
 
 @estadisticas_bp.route("/editar/<int:registro_id>", methods=["GET", "POST"])
