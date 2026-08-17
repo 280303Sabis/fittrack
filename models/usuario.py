@@ -26,6 +26,9 @@ class Usuario(db.Model, UserMixin):
     # Meta personal de minutos de actividad por semana (para la barra de progreso)
     meta_minutos_semana = db.Column(db.Integer, nullable=True, default=150)
 
+    # Preferencia de unidades: 'metrico' (kg/cm) o 'imperial' (lb/in)
+    unidad_medida = db.Column(db.String(10), nullable=True, default="metrico")
+
     # Para recuperación de contraseña: token temporal + cuándo se generó
     token_recuperacion = db.Column(db.String(100), nullable=True)
     token_expira = db.Column(db.DateTime, nullable=True)

@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block title %}Configuración — FitTrack{% endblock %}
+{% block content %}
+
+<span class="tag-label">Ajustes</span>
+<h2 class="mb-4">Configuración</h2>
+
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card mb-3">
+            <div class="card-body p-4">
+                <h5 class="mb-3">Meta semanal</h5>
+                <form method="POST" action="{{ url_for('configuracion.ver') }}">
+                    <input type="hidden" name="unidad_medida" value="{{ current_user.unidad_medida }}">
+                    <div class="mb-4">
+                        <label class="form-label">Minutos de actividad por semana</label>
+                        <input type="number" class="form-control" name="meta_minutos_semana"
+                               value="{{ current_user.meta_minutos_semana }}" min="1" required>
+                    </div>
+                    <button type="submit" class="btn btn-dark w-100">Guardar</button>
+                </form>
+            </div>
+        </div>
+
+        <div class="card mb-3">
+            <div class="card-body p-4">
+                <h5 class="mb-3">Unidades de medida</h5>
+                <form method="POST" action="{{ url_for('configuracion.ver') }}">
+                    <input type="hidden" name="meta_minutos_semana" value="{{ current_user.meta_minutos_semana }}">
+                    <div class="mb-3">
+                        <select class="form-select" name="unidad_medida">
+                            <option value="metrico" {% if current_user.unidad_medida != 'imperial' %}selected{% endif %}>Métrico (kg, cm)</option>
+                            <option value="imperial" {% if current_user.unidad_medida == 'imperial' %}selected{% endif %}>Imperial (lb, in)</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-dark w-100">Guardar</button>
+                </form>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-body p-4">
+                <h5 class="mb-3">Seguridad</h5>
+                <a href="{{ url_for('configuracion.cambiar_password') }}" class="btn btn-outline-dark w-100">Cambiar contraseña</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
