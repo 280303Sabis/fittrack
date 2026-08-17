@@ -44,6 +44,8 @@ def registro():
             flash("Ya existe una cuenta con ese correo.")
             return redirect(url_for("auth.registro"))
 
+        token = secrets.token_urlsafe(32)
+
         nuevo_usuario = Usuario(
             nombre=nombre,
             email=email,
@@ -51,15 +53,24 @@ def registro():
             peso_kg=float(peso_kg) if peso_kg else None,
             altura_cm=float(altura_cm) if altura_cm else None,
             edad=int(edad) if edad else None,
+            confirmado=False,
+            token_confirmacion=token,
         )
         nuevo_usuario.set_password(password)
 
         db.session.add(nuevo_usuario)
         db.session.commit()
 
-        login_user(nuevo_usuario)
-        flash(f"¡Bienvenido, {nombre}! Tu cuenta fue creada.")
-        return redirect(url_for("home"))
+        link = url_for("auth.confirmar", token=token, _external=True)
+        mensaje = Message(
+            subject="Confirma tu cuenta — FitTrack",
+            recipients=[nuevo_usuario.email],
+            body=f"Hola {nombre},\n\nGracias por registrarte en FitTrack. Confirma tu cuenta entrando a este link:\n{link}\n\nSi tú no creaste esta cuenta, ignora este correo.",
+        )
+        mail.send(mensaje)
+
+        flash(f"¡Bienvenido, {nombre}! Te enviamos un correo para confirmar tu cuenta antes de iniciar sesión.")
+        return redirect(url_for("auth.login"))
 
     return render_template("auth/registro.html")
 
@@ -80,6 +91,10 @@ def login():
             return redirect(url_for("auth.login"))
 
         if usuario and usuario.check_password(password):
+            if not usuario.confirmado:
+                flash("Debes confirmar tu cuenta antes de iniciar sesión. Revisa tu correo.")
+                return redirect(url_for("auth.login"))
+
             # Login correcto: reiniciamos el contador de intentos fallidos
             usuario.intentos_fallidos = 0
             usuario.bloqueado_hasta = None
@@ -173,3 +188,22 @@ def restablecer(token):
         return redirect(url_for("auth.login"))
 
     return render_template("auth/restablecer.html", token=token)
+
+@auth_bp.route("/confirmar/<token>")
+def confirmar(token):
+    usuario = Usuario.query.filter_by(token_confirmacion=token).first()
+
+    if not usuario:
+        flash("El link de confirmación no es válido.")
+        return redirect(url_for("auth.login"))
+
+    if usuario.confirmado:
+        flash("Tu cuenta ya estaba confirmada. Ya puedes iniciar sesión.")
+        return redirect(url_for("auth.login"))
+
+    usuario.confirmado = True
+    usuario.token_confirmacion = None
+    db.session.commit()
+
+    flash("¡Tu cuenta fue confirmada! Ya puedes iniciar sesión.")
+    return redirect(url_for("auth.login"))

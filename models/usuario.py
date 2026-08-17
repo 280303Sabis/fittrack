@@ -43,6 +43,10 @@ class Usuario(db.Model, UserMixin):
     intentos_fallidos = db.Column(db.Integer, nullable=False, default=0)
     bloqueado_hasta = db.Column(db.DateTime, nullable=True)
 
+    # Confirmación de cuenta por correo
+    confirmado = db.Column(db.Boolean, nullable=False, default=False)
+    token_confirmacion = db.Column(db.String(100), nullable=True)
+
     fecha_registro = db.Column(db.DateTime, default=datetime.utcnow)
 
     # Si se borra el usuario, se borran automáticamente todas sus rutinas
