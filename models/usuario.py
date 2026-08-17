@@ -35,6 +35,12 @@ class Usuario(db.Model, UserMixin):
 
     fecha_registro = db.Column(db.DateTime, default=datetime.utcnow)
 
+    # Si se borra el usuario, se borran automáticamente todas sus rutinas
+    # y registros de actividad (protección de datos: al eliminar la cuenta,
+    # no quedan datos huérfanos del usuario en la base de datos).
+    rutinas = db.relationship("Rutina", backref="usuario", cascade="all, delete-orphan")
+    registros_actividad = db.relationship("RegistroActividad", backref="usuario", cascade="all, delete-orphan")
+
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
 

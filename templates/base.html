@@ -23,9 +23,17 @@
                     <li class="nav-item"><a class="nav-link" href="{{ url_for('estadisticas.resumen') }}">Estadísticas</a></li>
                     <li class="nav-item"><a class="nav-link" href="{{ url_for('nutricion.consejos') }}">Nutrición</a></li>
                     {% if current_user.is_authenticated %}
-                        <li class="nav-item"><a class="nav-link" href="{{ url_for('perfil.ver') }}">Hola, {{ current_user.nombre }}</a></li>
-                        <li class="nav-item"><a class="nav-link" href="{{ url_for('configuracion.ver') }}">⚙</a></li>
-                        <li class="nav-item"><a class="nav-link" href="{{ url_for('auth.logout') }}">Cerrar sesión</a></li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                                {{ current_user.nombre }}
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end">
+                                <li><a class="dropdown-item" href="{{ url_for('perfil.ver') }}">Mi perfil</a></li>
+                                <li><a class="dropdown-item" href="{{ url_for('configuracion.ver') }}">Configuración</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item" href="{{ url_for('auth.logout') }}">Cerrar sesión</a></li>
+                            </ul>
+                        </li>
                     {% else %}
                         <li class="nav-item"><a class="nav-link" href="{{ url_for('auth.login') }}">Iniciar sesión</a></li>
                     {% endif %}

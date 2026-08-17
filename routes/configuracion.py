@@ -1,5 +1,5 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash
-from flask_login import login_required, current_user
+from flask_login import login_required, current_user, logout_user
 
 from extensions import db
 
@@ -49,3 +49,25 @@ def cambiar_password():
         return redirect(url_for("configuracion.ver"))
 
     return render_template("configuracion/cambiar_password.html")
+
+
+@configuracion_bp.route("/eliminar-cuenta", methods=["GET", "POST"])
+@login_required
+def eliminar_cuenta():
+    if request.method == "POST":
+        password = request.form.get("password")
+
+        if not current_user.check_password(password):
+            flash("Tu contraseña no es correcta.")
+            return redirect(url_for("configuracion.eliminar_cuenta"))
+
+        usuario = current_user
+        logout_user()
+
+        db.session.delete(usuario)
+        db.session.commit()
+
+        flash("Tu cuenta y todos tus datos fueron eliminados.")
+        return redirect(url_for("home"))
+
+    return render_template("configuracion/eliminar_cuenta.html")

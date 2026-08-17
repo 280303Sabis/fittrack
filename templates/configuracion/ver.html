@@ -38,10 +38,19 @@
             </div>
         </div>
 
-        <div class="card">
+        <div class="card mb-3">
             <div class="card-body p-4">
                 <h5 class="mb-3">Seguridad</h5>
                 <a href="{{ url_for('configuracion.cambiar_password') }}" class="btn btn-outline-dark w-100">Cambiar contraseña</a>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-body p-4">
+                <h5 class="mb-3">Zona de riesgo</h5>
+                <a href="{{ url_for('configuracion.eliminar_cuenta') }}" class="btn w-100" style="border: 1px solid var(--color-accent); color: var(--color-accent);">
+                    Eliminar mi cuenta
+                </a>
             </div>
         </div>
     </div>
